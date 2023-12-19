@@ -21,7 +21,7 @@ public class ProductController {
     @Autowired
     ProductService productService;
 
-    @GetMapping("")
+    @GetMapping("/view")
     ResponseEntity<List<Product>> getProducts() throws UserException, ProductException {
         return new ResponseEntity<>(productService.viewAllproducts(), HttpStatus.ACCEPTED);
     }

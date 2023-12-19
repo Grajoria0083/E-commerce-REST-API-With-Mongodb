@@ -24,6 +24,8 @@ public interface UserService {
 
     public User getUserById(Integer Id) throws UserException;
 
+    public String updateUserPassword(UserRequestModal urm) throws UserException;
+
     public User deleteUser(Integer Id) throws UserException;
 
     Wallet createWallet(Wallet wallet) throws UserException;

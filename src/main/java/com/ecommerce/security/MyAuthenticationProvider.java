@@ -32,9 +32,6 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String pwd = authentication.getCredentials().toString();
 
-        System.out.println(username);
-        System.out.println(pwd);
-
         Optional<User> opt = userRepository.findByEmail(username);
 
         if (!opt.isPresent())

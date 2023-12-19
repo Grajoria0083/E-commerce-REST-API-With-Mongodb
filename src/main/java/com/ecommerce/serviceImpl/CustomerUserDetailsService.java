@@ -30,8 +30,6 @@ public class CustomerUserDetailsService implements UserDetailsService {
 
         Optional<com.ecommerce.model.User> opt= userRepository.findByEmail(username);
 
-        System.out.println("username "+username);
-
         if(opt.isPresent()) {
 
             com.ecommerce.model.User customer= opt.get();

@@ -37,34 +37,34 @@ public class UserController {
     MongoOperations mongo;
 
 
-    @GetMapping("")
+    @GetMapping("/view")
     ResponseEntity<List<User>> getUsers() throws UserException {
         return new ResponseEntity<>(userService.getUsers(), HttpStatus.ACCEPTED);
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     ResponseEntity<User> getUserById(@PathVariable int id) throws UserException {
         User user = userService.getUserById(id);
         return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
     }
 
 
-    @PostMapping("")
+    @PostMapping("/save")
     ResponseEntity<User> saveUser(@RequestBody User user) throws UserException {
         User getUser = userService.addUser(user);
         return new ResponseEntity<>(getUser, HttpStatus.ACCEPTED);
     }
 
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     ResponseEntity<User> deleteUserById(@PathVariable int id) throws UserException {
         User getUser = userService.deleteUser(id);
         return new ResponseEntity<>(getUser, HttpStatus.ACCEPTED);
     }
 
 
-    @PutMapping("")
+    @PutMapping("/update")
     ResponseEntity<User> updateUserById(@RequestBody User user) throws UserException {
             User user1 = userService.updateUser(user);
         return new ResponseEntity<>(userService.updateUser(user), HttpStatus.ACCEPTED);
@@ -104,9 +104,26 @@ public class UserController {
     }
 
     @GetMapping("/wallet")
-    ResponseEntity<String> saveUser(UserRequestModal urm) throws UserException {
+    ResponseEntity<String> saveUser(@RequestBody UserRequestModal urm) throws UserException {
         String balance = userService.Wallet(urm);
         return new ResponseEntity<>(balance, HttpStatus.ACCEPTED);
+    }
+
+
+
+    @GetMapping("/admin")
+    ResponseEntity<String> getAdmin() throws UserException {
+        return new ResponseEntity<>("only admin can access", HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/customer")
+    ResponseEntity<String> getUser() throws UserException {
+        return new ResponseEntity<>("only admin can access", HttpStatus.ACCEPTED);
+    }
+
+    @PatchMapping("")
+    ResponseEntity<String> updateUserPassword(@RequestBody UserRequestModal userRequestModal) throws UserException {
+        return new ResponseEntity<>(userService.updateUserPassword(userRequestModal), HttpStatus.ACCEPTED);
     }
 
 }

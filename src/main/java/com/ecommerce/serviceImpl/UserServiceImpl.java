@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
     public User addUser(User user) throws UserException {
 
         user.setId(sequences.getNextSequence("user"));
+        user.setRole("ROLE_"+user.getRole().toUpperCase());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getAddresss()!=null){
                 List<Address> list = user.getAddresss();
@@ -131,6 +132,19 @@ public class UserServiceImpl implements UserService {
         else {
             throw new RuntimeException("invalid user id");
         }
+    }
+
+    @Override
+    public String updateUserPassword(UserRequestModal urm) throws UserException {
+
+        Optional<User> optionalUser = userRepository.findById(urm.getUserId());
+        if (optionalUser.isPresent()){
+            User user = optionalUser.get();
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+            return  "password updated successfully!";
+        }
+        throw new UserException("invalid id");
     }
 
     @Override
