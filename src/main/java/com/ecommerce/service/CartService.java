@@ -5,8 +5,7 @@ import com.ecommerce.Exception.ProductException;
 import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.Cart;
 import com.ecommerce.model.CartCheckout;
-import com.ecommerce.model.CartCreateRequestModal;
-import com.ecommerce.model.CartDetails;
+import com.ecommerce.DTO.CartCreateRequestModal;
 
 public interface CartService {
 

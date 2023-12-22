@@ -2,7 +2,7 @@ package com.ecommerce.service;
 
 import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.User;
-import com.ecommerce.model.UserRequestModal;
+import com.ecommerce.DTO.UserRequestModal;
 import com.ecommerce.model.User_details;
 import com.ecommerce.model.Wallet;
 

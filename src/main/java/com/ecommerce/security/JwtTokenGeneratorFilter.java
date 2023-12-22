@@ -27,15 +27,16 @@ public class JwtTokenGeneratorFilter extends OncePerRequestFilter{
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+
         if (authentication!=null){
 
             SecretKey secretKey = Keys.hmacShaKeyFor(SecurityContent.JWT_KEY.getBytes());
 
             String jwt = Jwts.builder()
-                    .setIssuer("gaurav")
+                    .setIssuer("Gaurav")
                     .setSubject("jwt token")
                     .claim("username",authentication.getName())
-                    .claim("authorities",populateAuthorities(authentication.getAuthorities()))
+                    .claim("role", getRole(authentication.getAuthorities()))
                     .setIssuedAt(new Date())
                     .setExpiration(new Date(new Date().getTime() + 1800000))
                     .signWith(secretKey).compact();
@@ -48,6 +49,22 @@ public class JwtTokenGeneratorFilter extends OncePerRequestFilter{
 
 
     }
+
+
+
+
+    private String getRole(Collection<? extends GrantedAuthority> collection) {
+
+        String role="";
+        for(GrantedAuthority ga:collection) {
+            role= ga.getAuthority();
+        }
+
+        System.out.println("getRole : "+role);
+        return role;
+    }
+
+
 
 
     private String populateAuthorities(Collection<? extends GrantedAuthority> collection) {

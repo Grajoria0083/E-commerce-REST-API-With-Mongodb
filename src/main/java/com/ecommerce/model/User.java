@@ -1,5 +1,6 @@
 package com.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jdk.jfr.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class User {
 
     private String mobile;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @CreatedDate
@@ -40,6 +42,7 @@ public class User {
 
     private List<Address> addresss;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String role;
 
 

@@ -1,27 +1,19 @@
 package com.ecommerce.controller;
 
 
+import com.ecommerce.DTO.UserRequestModal;
 import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.*;
 import com.ecommerce.repository.*;
 import com.ecommerce.serviceImpl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import static org.springframework.data.mongodb.core.FindAndModifyOptions.options;
-import static org.springframework.data.mongodb.core.query.Criteria.where;
-import static org.springframework.data.mongodb.core.query.Query.query;
 
 @RestController
 @RequestMapping("/user")
@@ -111,15 +103,15 @@ public class UserController {
 
 
 
-    @GetMapping("/admin")
-    ResponseEntity<String> getAdmin() throws UserException {
-        return new ResponseEntity<>("only admin can access", HttpStatus.ACCEPTED);
-    }
-
-    @GetMapping("/customer")
-    ResponseEntity<String> getUser() throws UserException {
-        return new ResponseEntity<>("only admin can access", HttpStatus.ACCEPTED);
-    }
+//    @GetMapping("/admin")
+//    ResponseEntity<String> getAdmin() throws UserException {
+//        return new ResponseEntity<>("only admin can access", HttpStatus.ACCEPTED);
+//    }
+//
+//    @GetMapping("/customer")
+//    ResponseEntity<String> getUser() throws UserException {
+//        return new ResponseEntity<>("only user can access", HttpStatus.ACCEPTED);
+//    }
 
     @PatchMapping("")
     ResponseEntity<String> updateUserPassword(@RequestBody UserRequestModal userRequestModal) throws UserException {

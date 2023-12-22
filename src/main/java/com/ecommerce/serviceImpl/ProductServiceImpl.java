@@ -3,17 +3,19 @@ package com.ecommerce.serviceImpl;
 import com.ecommerce.Exception.ProductException;
 import com.ecommerce.model.CustomSequences;
 import com.ecommerce.model.Product;
+import com.ecommerce.DTO.ProductFilterRequestModal;
 import com.ecommerce.model.Product_details;
 import com.ecommerce.repository.ProductRepo;
 import com.ecommerce.repository.Product_detailsRepo;
 import com.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -22,6 +24,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     ProductRepo productRepo;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Autowired
     Product_detailsRepo productDetailsRepo;
@@ -121,4 +126,54 @@ public class ProductServiceImpl implements ProductService {
         }
         throw new ProductException("Invalid product id!");
     }
+
+    @Override
+    public List<Product> productFilter(ProductFilterRequestModal pfrm) throws ProductException {
+
+         String name = pfrm.getName();
+         String category = pfrm.getCategory();
+         Integer minPrice = pfrm.getMinPrice();
+         Integer maxPrice = pfrm.getMaxPrice();
+         String size = pfrm.getSize();
+
+        Query query = new Query();
+
+        List<Criteria> criteriaList = new ArrayList<>();
+
+        if (name != null && !name.isEmpty()) {
+            criteriaList.add(Criteria.where("name").regex(name, "i"));
+        }
+
+        if (category != null && !category.isEmpty()) {
+            criteriaList.add(Criteria.where("category").is(category));
+        }
+
+        if (size != null && !size.isEmpty()) {
+            criteriaList.add(Criteria.where("size").is(size));
+        }
+
+        if (minPrice != null || maxPrice != null) {
+            List<Criteria> priceConditions = new ArrayList<>();
+
+            if (minPrice != null) {
+                priceConditions.add(Criteria.where("price").gte(minPrice));
+            }
+
+            if (maxPrice != null) {
+                priceConditions.add(Criteria.where("price").lte(maxPrice));
+            }
+
+            if (!priceConditions.isEmpty()) {
+                criteriaList.add(new Criteria().andOperator(priceConditions.toArray(new Criteria[0])));
+            }
+        }
+
+        if (!criteriaList.isEmpty()) {
+            query.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));
+        }
+
+        return mongoTemplate.find(query, Product.class);
+
+    }
+
 }

@@ -4,6 +4,7 @@ package com.ecommerce.controller;
 import com.ecommerce.Exception.ProductException;
 import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.Product;
+import com.ecommerce.DTO.ProductFilterRequestModal;
 import com.ecommerce.model.Product_details;
 import com.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+
 
 @RestController
 @RequestMapping("/product")
@@ -26,12 +29,12 @@ public class ProductController {
         return new ResponseEntity<>(productService.viewAllproducts(), HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("")
+    @PostMapping("/add")
     ResponseEntity<Product> addProduct(@RequestBody Product product) throws UserException, ProductException {
         return new ResponseEntity<>(productService.addProduct(product), HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("")
+    @PutMapping("/update")
     ResponseEntity<Product> updateProduct(@RequestBody Product product) throws UserException, ProductException {
         return new ResponseEntity<>(productService.updateProduct(product), HttpStatus.ACCEPTED);
     }
@@ -49,7 +52,7 @@ public class ProductController {
 
 
 
-
+    
 
     @PostMapping("/details")
     ResponseEntity<Product_details> addProduct_details(@RequestBody Product_details productDetails) throws UserException, ProductException {
@@ -64,6 +67,17 @@ public class ProductController {
     @GetMapping("/details/{prodId}")
     ResponseEntity<Product_details> getProduct_detailsById(@PathVariable Integer prodId) throws UserException, ProductException {
         return new ResponseEntity<>(productService.getProduct_detailsById(prodId) , HttpStatus.ACCEPTED);
+    }
+
+
+
+
+
+
+
+    @PostMapping("/filter")
+    ResponseEntity<List<Product>> filter(@RequestBody ProductFilterRequestModal pfrm) throws UserException, ProductException {
+        return new ResponseEntity<>(productService.productFilter(pfrm) , HttpStatus.ACCEPTED);
     }
 
 }

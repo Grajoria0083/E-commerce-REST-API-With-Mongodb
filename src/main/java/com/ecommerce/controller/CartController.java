@@ -1,6 +1,7 @@
 package com.ecommerce.controller;
 
 
+import com.ecommerce.DTO.CartCreateRequestModal;
 import com.ecommerce.Exception.CartException;
 import com.ecommerce.Exception.ProductException;
 import com.ecommerce.Exception.UserException;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/cart")

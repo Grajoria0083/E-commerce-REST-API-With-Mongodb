@@ -1,5 +1,6 @@
 package com.ecommerce.serviceImpl;
 
+import com.ecommerce.DTO.UserRequestModal;
 import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.*;
 import com.ecommerce.repository.AddressRepo;
@@ -43,10 +44,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User addUser(User user) throws UserException {
 
-        user.setId(sequences.getNextSequence("user"));
-        user.setRole("ROLE_"+user.getRole().toUpperCase());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getAddresss()!=null){
+        Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
+        if (!optionalUser.isPresent()){
+            user.setId(sequences.getNextSequence("user"));
+            user.setRole("ROLE_"+user.getRole().toUpperCase());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            if (user.getAddresss()!=null){
                 List<Address> list = user.getAddresss();
                 for (Address address:list){
                     address.setId(sequences.getNextSequence("address"));
@@ -54,9 +57,11 @@ public class UserServiceImpl implements UserService {
                     addressRepo.save(address);
                 }
             }
-        user.setCreated_at(LocalDateTime.now().now());
-        user.setUpdated_at(LocalDateTime.now().now());
-        return userRepository.save(user);
+            user.setCreated_at(LocalDateTime.now().now());
+            user.setUpdated_at(LocalDateTime.now().now());
+            return userRepository.save(user);
+        }
+        throw new UserException("this email is registered already!");
 
     }
 
