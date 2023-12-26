@@ -29,30 +29,26 @@ public class ProductController {
         return new ResponseEntity<>(productService.viewAllproducts(), HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("/add")
-    ResponseEntity<Product> addProduct(@RequestBody Product product) throws UserException, ProductException {
-        return new ResponseEntity<>(productService.addProduct(product), HttpStatus.ACCEPTED);
-    }
+//    @PostMapping("/add")
+//    ResponseEntity<Product> addProduct(@RequestBody Product product) throws UserException, ProductException {
+//        return new ResponseEntity<>(productService.addProduct(product), HttpStatus.ACCEPTED);
+//    }
+//
+//    @PutMapping("/update")
+//    ResponseEntity<Product> updateProduct(@RequestBody Product product) throws UserException, ProductException {
+//        return new ResponseEntity<>(productService.updateProduct(product), HttpStatus.ACCEPTED);
+//    }
 
-    @PutMapping("/update")
-    ResponseEntity<Product> updateProduct(@RequestBody Product product) throws UserException, ProductException {
-        return new ResponseEntity<>(productService.updateProduct(product), HttpStatus.ACCEPTED);
-    }
 
-    @GetMapping("/{prodId}")
-    ResponseEntity<Product> getProductById(@PathVariable Integer prodId) throws UserException, ProductException {
-        return new ResponseEntity<>(productService.getProductById(prodId) , HttpStatus.ACCEPTED);
-    }
-
-    @DeleteMapping("/{prodId}")
-    ResponseEntity<String> deleteProductById(@PathVariable Integer prodId) throws UserException, ProductException {
-        return new ResponseEntity<>(productService.deleteProductById(prodId) , HttpStatus.ACCEPTED);
-    }
+//    @DeleteMapping("/{prodId}")
+//    ResponseEntity<String> deleteProductById(@PathVariable Integer prodId) throws UserException, ProductException {
+//        return new ResponseEntity<>(productService.deleteProductById(prodId) , HttpStatus.ACCEPTED);
+//    }
 
 
 
 
-    
+
 
     @PostMapping("/details")
     ResponseEntity<Product_details> addProduct_details(@RequestBody Product_details productDetails) throws UserException, ProductException {

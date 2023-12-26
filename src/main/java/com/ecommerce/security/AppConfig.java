@@ -17,11 +17,14 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class AppConfig {
 
 
-    private String[] publicEndPoint = {"/user/save","/user/update","/user/get/**",
-             "/product/view","/cart","/swagger-ui/index.html","/v3/api-docs"};
+    private String[] publicEndPoint = {"/user/save","/user/get/**","/product/filter",
+             "/product/view","/cart","/swagger-ui/index.html","/v3/api-docs","/signIn"};
 
-    private String[] privateEndPoint = {"/user/delete","/user/get/**",
-            "/product/**","/product/update"};
+    private String[] privateEndPoint = {"/user/update","/user/delete/**","/user/update","/order"};
+
+    private String[] adminEndPoint = {"/admin/user/view","/admin/user/**","/admin/user/delete/**",
+            "/admin/product/get/**","/admin/product/view","/admin/product/add","/admin/product/update",
+            "/admin/product/delete/**","/admin/order/**"};
 
 
     @Bean
@@ -34,13 +37,11 @@ public class AppConfig {
                     .and()
                     .csrf().disable()
                     .authorizeHttpRequests()
-                    .requestMatchers("/swagger-ui/index.html","/v3/api-docs").hasRole("ADMIN")
+//                    .requestMatchers("/swagger-ui/index.html","/v3/api-docs").permitAll()
                     .requestMatchers(publicEndPoint).permitAll()
-//                    .requestMatchers(HttpMethod.POST,"/product/add").hasRole("ADMIN")
-//                    .requestMatchers(HttpMethod.DELETE,"/product/**").hasRole("ADMIN")
-//                    .requestMatchers(HttpMethod.GET, "/admin").hasRole("ADMIN")
-//                    .requestMatchers(HttpMethod.GET, "/customer").hasAnyRole("ADMIN","USER")
-                    .anyRequest().permitAll().and()
+                    .requestMatchers(privateEndPoint).hasRole("USER")
+                    .requestMatchers(adminEndPoint).hasRole("ADMIN")
+                    .anyRequest().authenticated().and()
                     .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                     .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
                     .formLogin()

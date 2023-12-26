@@ -6,6 +6,7 @@ import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.*;
 import com.ecommerce.repository.*;
 import com.ecommerce.serviceImpl.UserServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class UserController {
 
 
     @PostMapping("/save")
-    ResponseEntity<User> saveUser(@RequestBody User user) throws UserException {
+    ResponseEntity<User> saveUser(@Valid @RequestBody User user) throws UserException {
         User getUser = userService.addUser(user);
         return new ResponseEntity<>(getUser, HttpStatus.ACCEPTED);
     }
@@ -90,16 +91,16 @@ public class UserController {
 //    =======================================================
 
     @PostMapping("/wallet")
-    ResponseEntity<Wallet> saveUser(@RequestBody Wallet wallet) throws UserException {
+    ResponseEntity<Wallet> addWalletToUser(@RequestBody Wallet wallet) throws UserException {
         Wallet wallet1 = userService.createWallet(wallet);
         return new ResponseEntity<>(wallet1, HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/wallet")
-    ResponseEntity<String> saveUser(@RequestBody UserRequestModal urm) throws UserException {
-        String balance = userService.Wallet(urm);
-        return new ResponseEntity<>(balance, HttpStatus.ACCEPTED);
-    }
+//    @GetMapping("/wallet")
+//    ResponseEntity<String> saveUser(@RequestBody UserRequestModal urm) throws UserException {
+//        String balance = userService.Wallet(urm);
+//        return new ResponseEntity<>(balance, HttpStatus.ACCEPTED);
+//    }
 
 
 
