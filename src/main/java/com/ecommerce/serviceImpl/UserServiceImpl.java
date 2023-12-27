@@ -106,7 +106,6 @@ public class UserServiceImpl implements UserService {
             List<Address> list = user.getAddresss();
             System.out.println("List of address "+list);
             for (Address address:list){
-                System.out.println(address.getAddress_1()+" ===== "+address.getId());
                 if (address.getId()==null){
                     address.setId(sequences.getNextSequence("address"));
                 }
@@ -184,8 +183,20 @@ public class UserServiceImpl implements UserService {
 
     }
 
+//    @Override
+//    public Integer checkBalance(Integer userId, String pw) throws UserException {
+//        Optional<Wallet> optionalWallet = walletRepository.findByUserId(userId);
+//        if (optionalWallet.isPresent()){
+//            if (optionalWallet.get().getPassword().equals(pw)){
+//                return optionalWallet.get().getBalance();
+//            }
+//            throw new UserException("Invalid password!");
+//        }
+//        throw new UserException("Invalid user id!");
+//    }
+
     @Override
-    public String Wallet(UserRequestModal urm) throws UserException {
+    public String checkBalance(UserRequestModal urm) throws UserException {
         Optional<Wallet> wallet = walletRepository.findByUserId(urm.getUserId());
         if (wallet.isPresent()){
             if (wallet.get().getPassword().equals(urm.getPassword())){

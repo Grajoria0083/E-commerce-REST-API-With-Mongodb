@@ -35,6 +35,13 @@ public class OrderController {
     }
 
 
+    @DeleteMapping("/{orderId}")
+    ResponseEntity<String> deleteOrderById(@PathVariable Integer orderId) throws OrderException {
+        String order = orderService.deleteOrder(orderId);
+        return new ResponseEntity<>(order, HttpStatus.ACCEPTED);
+    }
+
+
 
 
 }

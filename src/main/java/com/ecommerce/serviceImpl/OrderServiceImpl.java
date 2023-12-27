@@ -84,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
                         }else
                             throw new WaletException("wrong password!");
                     }else
-                        throw new WaletException("invalid user id!");
+                        throw new WaletException("invalid user wallet details!");
                 }else
                     throw new WaletException("invalid amount!");
             }
@@ -122,6 +122,7 @@ public class OrderServiceImpl implements OrderService {
 
         Optional<Order> optionalOrder =  orderRepo.findById(orderId);
         if (optionalOrder.isPresent()){
+            Order order = optionalOrder.get();
             orderRepo.deleteById(orderId);
             Optional<Payment> optionalPayment = paymentRepository.findByOrderId(orderId);
             if (optionalOrder.isPresent()){
@@ -129,6 +130,13 @@ public class OrderServiceImpl implements OrderService {
                 Optional<Order_details> optionalOrderDetails = orderDetailsRepo.findById(optionalOrder.get().getOrderDetaildsId());
                 orderDetailsRepo.deleteById(optionalOrderDetails.get().getId());
             }
+            Optional<Wallet> optionalWallet = walletRepository.findByUserId(order.getUserId());
+            if (optionalWallet.isPresent()){
+                Wallet wallet = optionalWallet.get();
+                wallet.setBalance(wallet.getBalance()+ order.getCartCheckout().getTotalAmount());
+                walletRepository.save(wallet);
+            }
+            return "Your order is canceled successfully and amount is refunded into your account";
         }
         throw new OrderException("Invalid Order Id!");
     }

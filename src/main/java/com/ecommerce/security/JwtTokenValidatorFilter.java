@@ -2,6 +2,7 @@ package com.ecommerce.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import javax.crypto.SecretKey;

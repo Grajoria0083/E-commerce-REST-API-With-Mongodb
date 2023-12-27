@@ -106,11 +106,17 @@ public class CartServiceImpl implements CartService {
         Optional<Cart> optionalCart = cartRepo.findByUserId(ccrm.getUserId());
         if (optionalCart.isPresent()) {
             Cart cart = optionalCart.get();
-            for (CartDetails c : cart.getCartDetailsList()) {
+            List<CartDetails> cartDetailsList = cart.getCartDetailsList();
+            for (CartDetails c : cartDetailsList) {
                 if (c.getProduct().getId()==ccrm.getProductId()){
-                    if (c.getQuantity() >= ccrm.getQuantity()) {
+                    if (c.getQuantity() > ccrm.getQuantity()) {
                         c.setQuantity(c.getQuantity() - ccrm.getQuantity());
-                        cart.setUpdated_at(LocalDateTime.now());
+//                        cart.setUpdated_at(LocalDateTime.now());
+                        return cartRepo.save(cart);
+                    } else if (c.getQuantity() == ccrm.getQuantity()) {
+                        cartDetailsList.remove(c);
+                        cart.setCartDetailsList(cartDetailsList);
+//                        cart.setUpdated_at(LocalDateTime.now());
                         return cartRepo.save(cart);
                     }
                     throw new CartException("insuficient number of products");

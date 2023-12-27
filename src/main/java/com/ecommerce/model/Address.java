@@ -16,17 +16,26 @@ public class Address {
     @Id
     private Integer id;
 
-    private String address_1;
+//    private String address_1;
+//
+//    private String address_2;
+//
+//    private Integer city_id;
+//
+//    private Integer state_id;
+//
+//    private Integer country_id;
+//
+//    private Integer user_id;
 
-    private String address_2;
+//    =====================
 
-    private Integer city_id;
+    private Integer city;
 
-    private Integer state_id;
+    private Integer state;
 
-    private Integer country_id;
+    private Integer country;
 
     private Integer user_id;
-
 
 }

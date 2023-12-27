@@ -96,11 +96,17 @@ public class UserController {
         return new ResponseEntity<>(wallet1, HttpStatus.ACCEPTED);
     }
 
-//    @GetMapping("/wallet")
-//    ResponseEntity<String> saveUser(@RequestBody UserRequestModal urm) throws UserException {
-//        String balance = userService.Wallet(urm);
-//        return new ResponseEntity<>(balance, HttpStatus.ACCEPTED);
+//    @GetMapping("/wallet/{userId}")
+//    ResponseEntity<Wallet> addWalletToUser(Integer userId) throws UserException {
+//        Wallet wallet1 = userServic
+//        return new ResponseEntity<>(wallet1, HttpStatus.ACCEPTED);
 //    }
+
+    @GetMapping("/wallet")
+    ResponseEntity<String> checkBalance(@RequestBody UserRequestModal urm) throws UserException {
+        String balance = userService.checkBalance(urm);
+        return new ResponseEntity<>(balance, HttpStatus.ACCEPTED);
+    }
 
 
 

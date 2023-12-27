@@ -36,8 +36,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product addProduct(Product product) throws ProductException {
         product.setId(sequences.getNextSequence("product"));
-        product.setCreated_at(LocalDateTime.now());
-        product.setUpdated_at(LocalDateTime.now());
+//        product.setCreated_at(LocalDateTime.now());
+//        product.setUpdated_at(LocalDateTime.now());
         return productRepo.save(product);
     }
 
@@ -55,8 +55,8 @@ public class ProductServiceImpl implements ProductService {
     public Product updateProduct(Product product) throws ProductException {
         Optional<Product> optionalProduct = productRepo.findById(product.getId());
         if (optionalProduct.isPresent()){
-            product.setUpdated_at(LocalDateTime.now());
-            product.setCreated_at(optionalProduct.get().getCreated_at());
+//            product.setUpdated_at(LocalDateTime.now());
+//            product.setCreated_at(optionalProduct.get().getCreated_at());
             return productRepo.save(product);
         }
         throw new ProductException("Invalid product id!");
@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product_details addProduct_details(Product_details productDetails) throws ProductException {
-        productDetails.setId(sequences.getNextSequence("product"));
+        productDetails.setId(sequences.getNextSequence("productDetails"));
         Optional<Product> optionalProduct = productRepo.findById(productDetails.getProductId());
         if (optionalProduct.isPresent()) {
             Optional<Product_details> optionalProductDetails = productDetailsRepo.findByProductId(productDetails.getProductId());

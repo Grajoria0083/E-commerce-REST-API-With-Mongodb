@@ -2,7 +2,6 @@ package com.ecommerce.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
-//@EnableMethodSecurity
+@EnableMethodSecurity
 public class AppConfig {
 
 
@@ -37,7 +36,6 @@ public class AppConfig {
                     .and()
                     .csrf().disable()
                     .authorizeHttpRequests()
-//                    .requestMatchers("/swagger-ui/index.html","/v3/api-docs").permitAll()
                     .requestMatchers(publicEndPoint).permitAll()
                     .requestMatchers(privateEndPoint).hasRole("USER")
                     .requestMatchers(adminEndPoint).hasRole("ADMIN")

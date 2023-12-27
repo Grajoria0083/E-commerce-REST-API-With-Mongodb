@@ -29,7 +29,9 @@ public interface UserService {
     public User deleteUser(Integer Id) throws UserException;
 
     Wallet createWallet(Wallet wallet) throws UserException;
-    String Wallet(UserRequestModal urm) throws UserException;
+
+//    Integer checkBalance(Integer userId, String pw) throws UserException;
+    String checkBalance(UserRequestModal urm) throws UserException;
 
 
 }

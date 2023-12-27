@@ -4,7 +4,9 @@ package com.ecommerce.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
@@ -30,8 +32,11 @@ public class Order {
 //
 //    private Integer paymentTypeId;
 
+    @CreatedDate
     private LocalDate created_at;
 
+
+    @LastModifiedDate
     private LocalDate updated_at;
 
     private Integer orderDetaildsId;

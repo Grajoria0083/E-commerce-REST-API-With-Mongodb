@@ -16,6 +16,13 @@
 	<properties>
 		<maven.compiler.source>18</maven.compiler.source>
 		<maven.compiler.target>18</maven.compiler.target>
+		<maven-compiler-plugin>3.8.1</maven-compiler-plugin>
+
+		<jjwt.api.version>0.11.1</jjwt.api.version>
+		<jjwt.impl.version>0.11.1</jjwt.impl.version>
+		<jjwt.jackson.version>0.11.1</jjwt.jackson.version>
+		<springdoc.openapi-starter-webmvc.ui>2.0.2</springdoc.openapi-starter-webmvc.ui>
+		<querydsl-mongodb>4.4.0</querydsl-mongodb>
 
 	</properties>
 	<dependencies>
@@ -50,29 +57,29 @@
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
-			<version>0.11.1</version>
+			<version>${jjwt.api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
-			<version>0.11.1</version>
+			<version>${jjwt.impl.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
-			<version>0.11.1</version>
+			<version>${jjwt.jackson.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.0.2</version>
+			<version>${springdoc.openapi-starter-webmvc.ui}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-mongodb</artifactId>
-			<version>4.4.0</version> <!-- Use the latest version available -->
+			<version>${querydsl-mongodb}</version> <!-- Use the latest version available -->
 		</dependency>
 	</dependencies>
 
@@ -93,7 +100,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version><!-- Use the latest version -->
+				<version>${maven-compiler-plugin}</version><!-- Use the latest version -->
 				<configuration>
 					<source>${maven.compiler.source}</source>
 					<target>${maven.compiler.target}</target>
