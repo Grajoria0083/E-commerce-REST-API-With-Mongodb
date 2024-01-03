@@ -5,8 +5,7 @@ import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.Address;
 import com.ecommerce.model.CustomSequences;
 import com.ecommerce.model.User;
-import com.ecommerce.serviceImpl.AddressServiceImpl;
-import com.ecommerce.serviceImpl.UserServiceImpl;
+import com.ecommerce.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,25 +19,22 @@ import java.util.List;
 public class AddressController {
 
     @Autowired
-    AddressServiceImpl addressService;
-
-    @Autowired
-    UserServiceImpl userService;
-
-
-    @Autowired
-    CustomSequences sequences;
+    AddressService addressService;
 
 
     @PostMapping("/save/{userId}")
-    ResponseEntity<User> saveAddress(@RequestBody Address address, @PathVariable Integer userId) throws AddressException, UserException {
-        System.out.println("working...");
-        address.setId(sequences.getNextSequence("address"));
-        return new ResponseEntity<>(addressService.addAddressToUSer(address, userId), HttpStatus.ACCEPTED);
+    ResponseEntity<User> saveAddress(@RequestBody Address address) throws AddressException, UserException {
+        return new ResponseEntity<>(addressService.addAddressToUSer(address), HttpStatus.CREATED);
+    }
+
+
+    @PutMapping("/update")
+    ResponseEntity<User> updateAddress(@RequestBody Address address) throws AddressException, UserException {
+        return new ResponseEntity<>(addressService.addAddressToUSer(address), HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/")
     ResponseEntity<List<Address>> getAddresses() throws UserException, AddressException {
-        return new ResponseEntity<>(addressService.getAddresses(), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(addressService.getAddresses(), HttpStatus.OK);
     }
 }

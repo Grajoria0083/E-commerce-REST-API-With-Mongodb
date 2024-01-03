@@ -1,7 +1,9 @@
 package com.ecommerce.repository;
 
-import com.ecommerce.model.Order_details;
+import com.ecommerce.model.OrderDetails;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-public interface Order_detailsRepo extends MongoRepository<Order_details, Integer> {
+@Repository
+public interface Order_detailsRepo extends MongoRepository<OrderDetails, Integer> {
 }

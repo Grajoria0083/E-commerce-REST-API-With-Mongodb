@@ -5,7 +5,7 @@ import com.ecommerce.Exception.ProductException;
 import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.Product;
 import com.ecommerce.DTO.ProductFilterRequestModal;
-import com.ecommerce.model.Product_details;
+import com.ecommerce.model.ProductDetails;
 import com.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,43 +26,24 @@ public class ProductController {
 
     @GetMapping("/view")
     ResponseEntity<List<Product>> getProducts() throws UserException, ProductException {
-        return new ResponseEntity<>(productService.viewAllproducts(), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(productService.viewAllproducts(), HttpStatus.OK);
     }
-
-//    @PostMapping("/add")
-//    ResponseEntity<Product> addProduct(@RequestBody Product product) throws UserException, ProductException {
-//        return new ResponseEntity<>(productService.addProduct(product), HttpStatus.ACCEPTED);
-//    }
-//
-//    @PutMapping("/update")
-//    ResponseEntity<Product> updateProduct(@RequestBody Product product) throws UserException, ProductException {
-//        return new ResponseEntity<>(productService.updateProduct(product), HttpStatus.ACCEPTED);
-//    }
-
-
-//    @DeleteMapping("/{prodId}")
-//    ResponseEntity<String> deleteProductById(@PathVariable Integer prodId) throws UserException, ProductException {
-//        return new ResponseEntity<>(productService.deleteProductById(prodId) , HttpStatus.ACCEPTED);
-//    }
-
-
-
 
 
 
     @PostMapping("/details")
-    ResponseEntity<Product_details> addProduct_details(@RequestBody Product_details productDetails) throws UserException, ProductException {
-        return new ResponseEntity<>(productService.addProduct_details(productDetails), HttpStatus.ACCEPTED);
+    ResponseEntity<ProductDetails> addProduct_details(@RequestBody ProductDetails productDetails) throws UserException, ProductException {
+        return new ResponseEntity<>(productService.addProductDetails(productDetails), HttpStatus.CREATED);
     }
 
     @PutMapping("/details")
-    ResponseEntity<Product_details> updateProduct_details(@RequestBody Product_details productDetails) throws UserException, ProductException {
-        return new ResponseEntity<>(productService.updateProduct_details(productDetails), HttpStatus.ACCEPTED);
+    ResponseEntity<ProductDetails> updateProduct_details(@RequestBody ProductDetails productDetails) throws UserException, ProductException {
+        return new ResponseEntity<>(productService.updateProductDetails(productDetails), HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/details/{prodId}")
-    ResponseEntity<Product_details> getProduct_detailsById(@PathVariable Integer prodId) throws UserException, ProductException {
-        return new ResponseEntity<>(productService.getProduct_detailsById(prodId) , HttpStatus.ACCEPTED);
+    ResponseEntity<ProductDetails> getProduct_detailsById(@PathVariable Integer prodId) throws UserException, ProductException {
+        return new ResponseEntity<>(productService.getProductDetailsById(prodId) , HttpStatus.OK);
     }
 
 

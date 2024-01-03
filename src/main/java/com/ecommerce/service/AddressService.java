@@ -11,9 +11,9 @@ import java.util.List;
 
 public interface AddressService {
 
-    public User addAddressToUSer(@RequestBody Address address, @PathVariable Integer cust_id) throws AddressException, UserException;
+    public User addAddressToUSer(@RequestBody Address address) throws AddressException, UserException;
 
-    public User updateAddressToUSer(@RequestBody Address address, @PathVariable Integer cust_id) throws AddressException, UserException;
+    public User updateAddressToUSer(@RequestBody Address address) throws AddressException, UserException;
 
     public List<Address> getAddresses() throws AddressException;
 

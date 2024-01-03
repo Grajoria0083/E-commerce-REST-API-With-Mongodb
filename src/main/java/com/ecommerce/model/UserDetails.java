@@ -7,16 +7,22 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
-@Document
+@Document(value = "userDetails")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Country {
+public class UserDetails {
 
 
     @Id
     private Integer id;
 
-    private String name;
+    private String company;
+
+    private String age;
+
+    private String maritalStatus;
+
+    private Integer userId;
 
 }

@@ -37,13 +37,13 @@ public class AppConfig {
                     .csrf().disable()
                     .authorizeHttpRequests()
                     .requestMatchers(publicEndPoint).permitAll()
-                    .requestMatchers(privateEndPoint).hasRole("USER")
-                    .requestMatchers(adminEndPoint).hasRole("ADMIN")
-                    .anyRequest().authenticated().and()
-                    .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-                    .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
-                    .formLogin()
-                    .and()
+//                    .requestMatchers(privateEndPoint).hasRole("USER")
+//                    .requestMatchers(adminEndPoint).hasRole("ADMIN")
+                    .anyRequest().permitAll().and()
+//                    .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+//                    .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
+//                    .formLogin()
+//                    .and()
                     .httpBasic();
 
             return http.build();

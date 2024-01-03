@@ -49,6 +49,7 @@ public class UserServiceImpl implements UserService {
             user.setId(sequences.getNextSequence("user"));
             user.setRole("ROLE_"+user.getRole().toUpperCase());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setCreated_at(LocalDateTime.now());
             if (user.getAddresss()!=null){
                 List<Address> list = user.getAddresss();
                 for (Address address:list){
@@ -57,8 +58,6 @@ public class UserServiceImpl implements UserService {
                     addressRepo.save(address);
                 }
             }
-            user.setCreated_at(LocalDateTime.now().now());
-            user.setUpdated_at(LocalDateTime.now().now());
             return userRepository.save(user);
         }
         throw new UserException("this email is registered already!");
@@ -66,18 +65,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User_details addUser_details(User_details userDetails) throws UserException {
-        Optional<User> optionalUser = userRepository.findById(userDetails.getUser_id());
+    public UserDetails addUser_details(UserDetails userDetails) throws UserException {
+        Optional<User> optionalUser = userRepository.findById(userDetails.getUserId());
         if (optionalUser.isPresent()){
+            Optional<UserDetails> optionalUserDetails = userDetailsRepo.findByUserId(userDetails.getUserId());
+            if (optionalUserDetails.isPresent()){
+                throw new UserException("this user details is filled already");
+            }
             userDetails.setId(sequences.getNextSequence("user_details"));
-            userDetailsRepo.save(userDetails);
+            return userDetailsRepo.save(userDetails);
         }
-        throw new RuntimeException("invalid user id");
+        throw new UserException("invalid user id");
     }
 
     @Override
-    public User_details getUser_detailsById(Integer udId) throws UserException {
-        Optional<User_details> optionalUser = userDetailsRepo.findById(udId);
+    public UserDetails getUser_detailsById(Integer udId) throws UserException {
+        Optional<UserDetails> optionalUser = userDetailsRepo.findById(udId);
         if (optionalUser.isPresent()){
             return optionalUser.get();
         }
@@ -87,8 +90,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User_details updateUser_details(User_details userDetails) throws UserException {
-        Optional<User_details> optionalUser = userDetailsRepo.findById(userDetails.getId());
+    public UserDetails updateUser_details(UserDetails userDetails) throws UserException {
+        Optional<UserDetails> optionalUser = userDetailsRepo.findById(userDetails.getId());
         if (optionalUser.isPresent()){
             return userDetailsRepo.save(userDetails);
         }
@@ -102,7 +105,6 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findById(user.getId());
         if (optionalUser.isPresent()){
             user.setCreated_at(optionalUser.get().getCreated_at());
-            user.setUpdated_at(LocalDateTime.now().now());
             List<Address> list = user.getAddresss();
             System.out.println("List of address "+list);
             for (Address address:list){
@@ -183,17 +185,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-//    @Override
-//    public Integer checkBalance(Integer userId, String pw) throws UserException {
-//        Optional<Wallet> optionalWallet = walletRepository.findByUserId(userId);
-//        if (optionalWallet.isPresent()){
-//            if (optionalWallet.get().getPassword().equals(pw)){
-//                return optionalWallet.get().getBalance();
-//            }
-//            throw new UserException("Invalid password!");
-//        }
-//        throw new UserException("Invalid user id!");
-//    }
+
 
     @Override
     public String checkBalance(UserRequestModal urm) throws UserException {
@@ -207,23 +199,6 @@ public class UserServiceImpl implements UserService {
         throw new UserException("Invalid user id!");
     }
 
-
-//    ===========================================================
-
-//    @Override
-//    Wallet createWallet(Wallet wallet){
-//        return walletRepository.save(wallet);
-//    }
-//
-//
-//    @Override
-//    Integer Wallet(Integer userId, String password) throws UserException {
-//        Optional<Wallet> wallet = walletRepository.findByUserId(userId);
-//        if (wallet.isPresent() && wallet.get().getPassword().equals(password)){
-//            return wallet.get().getBalance();
-//        }
-//        throw new UserException("Invalid user id!");
-//    }
 
 
 }

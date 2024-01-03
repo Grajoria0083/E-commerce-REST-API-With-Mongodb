@@ -11,11 +11,11 @@ public interface CartService {
 
     public Cart addToCart (CartCreateRequestModal cartCreateRequestModal) throws UserException, ProductException, CartException;
 
-    public Cart getCart (Integer userId) throws CartException;
+    public Cart getCartByUserId (Integer userId) throws CartException;
 
     public Cart updateCart (CartCreateRequestModal ccrm) throws CartException;
 
-    public String removeProductToCart (Integer productId, Integer userId) throws ProductException, CartException;
+    public String removeProductToCart (CartCreateRequestModal ccrm) throws ProductException, CartException;
 
-    public CartCheckout checkout (Integer userId) throws CartException;
+    public CartCheckout checkoutCartDetails (Integer userId) throws CartException;
 }

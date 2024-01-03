@@ -21,22 +21,10 @@ public class Cart {
     @Id
     private Integer id;
 
-//    private Integer quantity;
-//
-//    private LocalDateTime created_at;
-//
-//    private LocalDateTime updated_at;
-//
-//    private Integer productId;
-//
-//    private Integer userId;
+    @CreatedDate
+    private LocalDateTime created_at;
 
-//============================================
-
-@CreatedDate
-private LocalDateTime created_at;
-
-@LastModifiedDate
+    @LastModifiedDate
     private LocalDateTime updated_at;
 
     private Integer userId;

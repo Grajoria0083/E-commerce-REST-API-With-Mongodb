@@ -3,6 +3,7 @@ package com.ecommerce.serviceImpl;
 import com.ecommerce.Exception.AddressException;
 import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.Address;
+import com.ecommerce.model.CustomSequences;
 import com.ecommerce.model.User;
 import com.ecommerce.repository.AddressRepo;
 import com.ecommerce.repository.UserRepository;
@@ -20,13 +21,19 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     AddressRepo addressRepo;
 
-
     @Autowired
     UserRepository userRepo;
 
+    @Autowired
+    CustomSequences sequences;
+
+
+
+
     @Override
-    public User addAddressToUSer(Address address, Integer user_id) throws AddressException, UserException {
-        Optional<User> optionalUser = userRepo.findById(user_id);
+    public User addAddressToUSer(Address address) throws AddressException, UserException {
+        address.setId(sequences.getNextSequence("address"));
+        Optional<User> optionalUser = userRepo.findById(address.getUser_id());
         if (optionalUser.isPresent()){
             User user = optionalUser.get();
             user.getAddresss().add(address);
@@ -39,8 +46,20 @@ public class AddressServiceImpl implements AddressService {
 
 
     @Override
-    public User updateAddressToUSer(Address address, Integer cust_id) throws AddressException, UserException {
-        return null;
+    public User updateAddressToUSer(Address address) throws AddressException, UserException {
+        Optional<User> optionalUser = userRepo.findById(address.getUser_id());
+        if (optionalUser.isPresent()){
+            User user = optionalUser.get();
+            Address address1 = addressRepo.findById(address.getId()).get();
+            addressRepo.deleteById(address.getId());
+            List<Address> addressList = user.getAddresss();
+            addressList.remove(address1);
+            addressList.add(address);
+            userRepo.save(user);
+            addressRepo.save(address);
+            return user;
+        }
+        throw new UserException("Invalid user id!");
     }
 
     @Override

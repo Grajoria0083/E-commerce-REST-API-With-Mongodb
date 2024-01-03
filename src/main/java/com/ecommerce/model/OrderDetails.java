@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Order_details {
+public class OrderDetails {
 
     @Id
     private Integer id;
@@ -21,5 +21,7 @@ public class Order_details {
     private String password;
 
     private String paymentType;
+
+    private Integer userId;
 
 }

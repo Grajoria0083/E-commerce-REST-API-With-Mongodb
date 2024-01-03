@@ -44,7 +44,7 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
             if (passwordEncoder.matches(pwd, user.getPassword())) {
 
                 List<GrantedAuthority> authorities = new ArrayList<>();
-//                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
                 authorities.add(new SimpleGrantedAuthority(user.getRole()));
 
                 return new UsernamePasswordAuthenticationToken(username, pwd, authorities);

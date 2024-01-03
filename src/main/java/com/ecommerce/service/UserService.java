@@ -3,7 +3,7 @@ package com.ecommerce.service;
 import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.User;
 import com.ecommerce.DTO.UserRequestModal;
-import com.ecommerce.model.User_details;
+import com.ecommerce.model.UserDetails;
 import com.ecommerce.model.Wallet;
 
 import java.util.List;
@@ -12,11 +12,11 @@ public interface UserService {
 
     public User addUser(User user) throws UserException;
 
-    public User_details addUser_details(User_details userDetails) throws UserException;
+    public UserDetails addUser_details(UserDetails userDetails) throws UserException;
 
-    public User_details getUser_detailsById(Integer udId) throws UserException;
+    public UserDetails getUser_detailsById(Integer udId) throws UserException;
 
-    public User_details updateUser_details(User_details userDetails) throws UserException;
+    public UserDetails updateUser_details(UserDetails userDetails) throws UserException;
 
     public User updateUser(User user) throws UserException;
 
@@ -30,7 +30,6 @@ public interface UserService {
 
     Wallet createWallet(Wallet wallet) throws UserException;
 
-//    Integer checkBalance(Integer userId, String pw) throws UserException;
     String checkBalance(UserRequestModal urm) throws UserException;
 
 

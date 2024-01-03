@@ -5,7 +5,7 @@ import com.ecommerce.DTO.UserRequestModal;
 import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.*;
 import com.ecommerce.repository.*;
-import com.ecommerce.serviceImpl.UserServiceImpl;
+import com.ecommerce.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -24,7 +24,7 @@ public class UserController {
     AddressRepo addressRepo;
 
     @Autowired
-    UserServiceImpl userService;
+    UserService userService;
 
     @Autowired
     MongoOperations mongo;
@@ -32,28 +32,28 @@ public class UserController {
 
     @GetMapping("/view")
     ResponseEntity<List<User>> getUsers() throws UserException {
-        return new ResponseEntity<>(userService.getUsers(), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
 
 
     @GetMapping("/get/{id}")
     ResponseEntity<User> getUserById(@PathVariable int id) throws UserException {
         User user = userService.getUserById(id);
-        return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
 
     @PostMapping("/save")
     ResponseEntity<User> saveUser(@Valid @RequestBody User user) throws UserException {
         User getUser = userService.addUser(user);
-        return new ResponseEntity<>(getUser, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(getUser, HttpStatus.CREATED);
     }
 
 
     @DeleteMapping("delete/{id}")
     ResponseEntity<User> deleteUserById(@PathVariable int id) throws UserException {
         User getUser = userService.deleteUser(id);
-        return new ResponseEntity<>(getUser, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(getUser, HttpStatus.OK);
     }
 
 
@@ -65,60 +65,39 @@ public class UserController {
 
 
     @GetMapping("/details/{id}")
-    ResponseEntity<User_details> getUser_detailsDById(@PathVariable int id) throws UserException {
-        User_details user = userService.getUser_detailsById(id);
-        return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
+    ResponseEntity<UserDetails> getUser_detailsDById(@PathVariable int id) throws UserException {
+        UserDetails user = userService.getUser_detailsById(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping("/details")
-    ResponseEntity<User_details> saveUser_details(@RequestBody User_details user) throws UserException {
-        User_details getUser = userService.addUser_details(user);
-        return new ResponseEntity<>(getUser, HttpStatus.ACCEPTED);
+    ResponseEntity<UserDetails> saveUser_details(@RequestBody UserDetails user) throws UserException {
+        UserDetails getUser = userService.addUser_details(user);
+        return new ResponseEntity<>(getUser, HttpStatus.CREATED);
     }
 
 
     @PutMapping("/details")
-    ResponseEntity<User_details> updateUser_detailsById(@RequestBody User_details user) throws UserException {
-        User_details user1 = userService.updateUser_details(user);
+    ResponseEntity<UserDetails> updateUser_detailsById(@RequestBody UserDetails user) throws UserException {
+        UserDetails user1 = userService.updateUser_details(user);
         return new ResponseEntity<>(user1, HttpStatus.ACCEPTED);
     }
 
 
 
-
-
-
-//    =======================================================
-
     @PostMapping("/wallet")
     ResponseEntity<Wallet> addWalletToUser(@RequestBody Wallet wallet) throws UserException {
         Wallet wallet1 = userService.createWallet(wallet);
-        return new ResponseEntity<>(wallet1, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(wallet1, HttpStatus.CREATED);
     }
-
-//    @GetMapping("/wallet/{userId}")
-//    ResponseEntity<Wallet> addWalletToUser(Integer userId) throws UserException {
-//        Wallet wallet1 = userServic
-//        return new ResponseEntity<>(wallet1, HttpStatus.ACCEPTED);
-//    }
 
     @GetMapping("/wallet")
     ResponseEntity<String> checkBalance(@RequestBody UserRequestModal urm) throws UserException {
         String balance = userService.checkBalance(urm);
-        return new ResponseEntity<>(balance, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(balance, HttpStatus.OK);
     }
 
 
-
-//    @GetMapping("/admin")
-//    ResponseEntity<String> getAdmin() throws UserException {
-//        return new ResponseEntity<>("only admin can access", HttpStatus.ACCEPTED);
-//    }
-//
-//    @GetMapping("/customer")
-//    ResponseEntity<String> getUser() throws UserException {
-//        return new ResponseEntity<>("only user can access", HttpStatus.ACCEPTED);
-//    }
 
     @PatchMapping("")
     ResponseEntity<String> updateUserPassword(@RequestBody UserRequestModal userRequestModal) throws UserException {

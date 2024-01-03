@@ -1,5 +1,7 @@
 package com.ecommerce.serviceImpl;
 
+import com.ecommerce.DTO.OrderFilterRequestModal;
+import com.ecommerce.DTO.OrderRequestModal;
 import com.ecommerce.Exception.CartException;
 import com.ecommerce.Exception.OrderException;
 import com.ecommerce.Exception.WaletException;
@@ -7,10 +9,14 @@ import com.ecommerce.model.*;
 import com.ecommerce.repository.*;
 import com.ecommerce.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,15 +25,7 @@ import java.util.Optional;
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
-    CartRepo cartRepo;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
     Order_detailsRepo orderDetailsRepo;
-    @Autowired
-    ProductRepo productRepo;
 
     @Autowired
     CustomSequences sequences;
@@ -36,8 +34,7 @@ public class OrderServiceImpl implements OrderService {
     OrderRepo orderRepo;
 
     @Autowired
-    UserCartRepository userCartRepository;
-
+    MongoTemplate mongoTemplate;
 
     @Autowired
     CartCheckoutRepository cartCheckoutRepository;
@@ -57,49 +54,50 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Order order(Order_details orderDetails, Integer userId) throws CartException, WaletException {
+    public Order orderByUser(OrderDetails orderDetails) throws CartException, WaletException {
 
-        Optional<CartCheckout> optionalCartCheckout = cartCheckoutRepository.findByUserId(userId);
-        if (optionalCartCheckout.isPresent()){
-            CartCheckout cartCheckout = optionalCartCheckout.get();
+//        Optional<CartCheckout> optionalCartCheckout = cartCheckoutRepository.findByUserId(orderDetails.getUserId());
+//        if (optionalCartCheckout.isPresent()){
+//            CartCheckout cartCheckout = optionalCartCheckout.get();
+        CartCheckout cartCheckout = cartService.checkoutCartDetails(orderDetails.getUserId());
+        if (cartCheckout!=null){
 
-//            CartCheckout cartCheckout = cartService.checkout(userId);
             Payment payment = new Payment();
             Order order = new Order();
-            if (orderDetails.getPaymentType().equals("COD")){
+            if (orderDetails.getPaymentType() == null || orderDetails.getPaymentType().equals("COD")){
                 payment.setStatus("pending");
+                payment.setType("COD");
+                order.setPaymentStatus("pending");
 
             } else if (orderDetails.getPaymentType().equals("Wallet")) {
-                if (cartCheckout.getTotalAmount().equals(orderDetails.getTotalAmount())){
-                    Optional<Wallet> optionalWallet = walletRepository.findByUserId(userId);
-                    if (optionalWallet.isPresent()){
-                        Wallet wallet = optionalWallet.get();
-                        if (wallet.getPassword().equals(orderDetails.getPassword())){
-                            if (wallet.getBalance()>=cartCheckout.getTotalAmount()){
-                                wallet.setBalance(wallet.getBalance()-cartCheckout.getTotalAmount());
-                                walletRepository.save(wallet);
-                                payment.setStatus("Payment is done successfully!");
-                            }else
-                                throw new WaletException("Insuficien balance in wallet!");
-                        }else
-                            throw new WaletException("wrong password!");
+                Optional<Wallet> optionalWallet = walletRepository.findByUserId(orderDetails.getUserId());
+                if (optionalWallet.isPresent()){
+                    Wallet wallet = optionalWallet.get();
+                    if (wallet.getBalance()>=cartCheckout.getTotalAmount()){
+                        wallet.setBalance(wallet.getBalance()-cartCheckout.getTotalAmount());
+                        walletRepository.save(wallet);
+                        payment.setStatus("Payment done successfully!");
+                        payment.setType("Wallet");
+                        order.setPaymentStatus("Payment done successfully!");
                     }else
-                        throw new WaletException("invalid user wallet details!");
+                        throw new WaletException("Insuficien balance in wallet!");
                 }else
-                    throw new WaletException("invalid amount!");
+                    throw new WaletException("invalid user wallet details!");
             }
             orderDetails.setId(sequences.getNextSequence("orderDetails"));
             payment.setId(sequences.getNextSequence("payment"));
             payment.setType(orderDetails.getPaymentType());
-//            payment.setUserId(userId);
-
+//            payment.setStatus();
             cartCheckout.setActive(false);
             order.setId(sequences.getNextSequence("order"));
-            order.setUserId(userId);
+            order.setUserId(orderDetails.getUserId());
             order.setCartCheckout(cartCheckout);
-            order.setCreated_at(LocalDate.now());
-            order.setUpdated_at(LocalDate.now());
             order.setOrderDetaildsId(orderDetails.getId());
+            order.setActive(true);
+            order.setPaymentStatus("pending");
+            order.setOrderStatus(OrderStatus.PROGRESS.name());
+            order.setCreatedAt(LocalDateTime.now());
+            order.setUpdatedAt(LocalDateTime.now());
             payment.setOrderId(order.getId());
             paymentRepository.save(payment);
             orderDetailsRepo.save(orderDetails);
@@ -123,125 +121,135 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> optionalOrder =  orderRepo.findById(orderId);
         if (optionalOrder.isPresent()){
             Order order = optionalOrder.get();
-            orderRepo.deleteById(orderId);
-            Optional<Payment> optionalPayment = paymentRepository.findByOrderId(orderId);
-            if (optionalOrder.isPresent()){
-                paymentRepository.deleteById(optionalPayment.get().getId());
-                Optional<Order_details> optionalOrderDetails = orderDetailsRepo.findById(optionalOrder.get().getOrderDetaildsId());
-                orderDetailsRepo.deleteById(optionalOrderDetails.get().getId());
-            }
-            Optional<Wallet> optionalWallet = walletRepository.findByUserId(order.getUserId());
-            if (optionalWallet.isPresent()){
-                Wallet wallet = optionalWallet.get();
-                wallet.setBalance(wallet.getBalance()+ order.getCartCheckout().getTotalAmount());
-                walletRepository.save(wallet);
-            }
-            return "Your order is canceled successfully and amount is refunded into your account";
+            order.setActive(false);
+            orderRepo.save(order);
+            return "order canceled";
         }
         throw new OrderException("Invalid Order Id!");
     }
 
 
-//
-//      List<Cart> cartList = cartRepo.findByUserId(userId);
-//        if (!cartList.isEmpty()){
-//            int amount = 0;
-//            int productCount = 0;
-//            Order order = new Order();
-//            Order_details orderDetails = new Order_details();
-//            for (Cart cart:cartList){
-//                order.setId(sequences.getNextSequence("order"));
-//                order.setProductId(cart.getProductId());
-//                order.setUserId(cart.getUserId());
-//                order.setCreated_at(LocalDate.now());
-//                order.setUpdated_at(LocalDate.now());
-//                orderRepo.save(order);
-//
-//                productCount = cart.getQuantity();
-//                amount = productRepo.findById(cart.getProductId()).get().getPrice()*cart.getQuantity();
-//                orderDetails.setId(sequences.getNextSequence("orderDetails"));
-//                orderDetails.setTotalAmount(amount);
-//                orderDetails.setTotalQuantity(productCount);
-//                orderDetails.setOrderId(order.getId());
-//                orderDetailsRepo.save(orderDetails);
-//
-//            }
-//            return "Items order successfully!";
-//        }
-//        throw new CartException("No product is added to cart");
-//    }
 
-//    @Override
-//    public String order(Integer userId) throws CartException {
-////
-////        List<Cart> cartList = cartRepo.findByUserId(userId);
-////        if (!cartList.isEmpty()){
-////            int amount = 0;
-////            int productCount = 0;
-////            Order order = new Order();
-////            Order_details orderDetails = new Order_details();
-////            for (Cart cart:cartList){
-////                order.setId(sequences.getNextSequence("order"));
-////                order.setProductId(cart.getProductId());
-////                order.setUserId(cart.getUserId());
-////                order.setCreated_at(LocalDate.now());
-////                order.setUpdated_at(LocalDate.now());
-////                orderRepo.save(order);
-////
-////                productCount = cart.getQuantity();
-////                amount = productRepo.findById(cart.getProductId()).get().getPrice()*cart.getQuantity();
-////                orderDetails.setId(sequences.getNextSequence("orderDetails"));
-////                orderDetails.setTotalAmount(amount);
-////                orderDetails.setTotalQuantity(productCount);
-////                orderDetails.setOrderId(order.getId());
-////                orderDetailsRepo.save(orderDetails);
-////
-////            }
-////            return "Items order successfully!";
-////        }
-//        throw new CartException("No product is added to cart");
-//    }
+    @Override
+    public List<Order> getOrdersByUserId (Integer userId) throws OrderException {
+        return orderRepo.findByUserId(userId);
+    }
+
+    @Override
+    public List<Order> orderFilter(OrderFilterRequestModal rfrm) throws OrderException {
+
+        String paymentStatus=rfrm.getPaymentStatus();
+        String orderStatus = rfrm.getOrderStatus();
+        LocalDate sDate = rfrm.getStartDate();
+        LocalDateTime startDate = sDate.atTime(LocalTime.MIN);
+        LocalDate eDate = rfrm.getEndDate();
+        LocalDateTime endDate = eDate.atTime(LocalTime.MAX);
+
+        String productName = rfrm.getProductName();
+        Integer userId = rfrm.getUserId();
+
+        Criteria c1 =new Criteria(),c2 =new Criteria() ;
+
+        Criteria criteria =new Criteria();
+
+        if (paymentStatus != null && !paymentStatus.isEmpty()) {
+            criteria.and("paymentStatus").is(paymentStatus);
+        }
+
+        if (orderStatus != null && !orderStatus.isEmpty()) {
+            criteria.and("orderStatus").is(orderStatus);
+        }
+
+        if (productName != null && !productName.isEmpty()) {
+            criteria.and("cartCheckout.productList.name").is(productName);
+        }
+
+        if (userId != null && userId!=0) {
+            criteria.and("userId").is(userId);
+        }
+
+        if (startDate != null) {
+             c1 = Criteria.where("createdAt").gte(startDate);
+        }
+
+        if (endDate != null) {
+             c2 = Criteria.where("createdAt").lte(endDate);
+        }
+
+        Criteria c = new Criteria().andOperator(c1, c2, criteria);
+
+
+        Query query = new Query(c);
+
+        return mongoTemplate.find(query, Order.class);
+    }
 
 
 
+    @Override
+    public String updateOrderStatusByOrderId(OrderRequestModal orm) throws OrderException {
 
+        Optional<Order> optionalOrder = orderRepo.findById(orm.getOrderId());
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            order.setOrderStatus(OrderStatus.valueOf(orm.getOrderStatus().toUpperCase()).name().toLowerCase());
 
-
-
-
-
-//    =============================================================================
-
-
-//    @Override
-//    public String order(Integer userId, Integer cartId) {
-//
-//        List<Cart> cartList = cartRepo.findByUserId(userId);
-//        if (!cartList.isEmpty()){
-//            int amount = 0;
-//            int productCount = 0;
-//            Order order = new Order();
-//            List<Product> productList =new ArrayList<>();
-//            for (Cart cart:cartList){
-//                productList.add(productRepo.findById(cart.getProductId()).get());
-//                productCount = cart.getQuantity();
-//                amount += productRepo.findById(cart.getProductId()).get().getPrice()*cart.getQuantity();
-//                orderRepo.save(order);
-//                Optional<Cart> cart1 = cartRepo.findById(userCart.get().getCartId());
-//                List<CartDetails> cartDetailsList = cart1.get().getCartDetailsList();
-//                if (!cartDetailsList.isEmpty()){
-//                    order.setId(sequences.getNextSequence("cartDetails"));
-//                    for (CartDetails cd:cartDetailsList){
-//
-//                    }
-//                }
-//            }
-//            order.setId(sequences.getNextSequence("order"));
-////            order.setProduct_id(cart.getProductId());
-//            order.setUserId(cart.getUserId());
-//            order.setCreated_at(LocalDate.now());
-//            order.setUpdated_at(LocalDate.now());
-//        }
-//        return "";
-//    }
+            orderRepo.save(order);
+            return "Order status is updated successfully!";
+        }
+        throw new OrderException("Invalid Order Id!");
+    }
 }
+
+
+
+
+
+
+//    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd H:m:s");
+//    Date fromDate = dateFormat.parse("2020-09-23 00:00:00");
+//    Date toDate = dateFormat.parse("2020-09-23 23:59:59");
+//
+//    Criteria c1 = Criteria.where("someDate").gte(fromDate);
+//    Criteria c2 = Criteria.where("someDate").lte(toDate);
+//    Criteria c = new Criteria().andOperator(c1, c2);
+//
+//    Query qry = Query.query(c);
+//
+//    MongoOperations mongoOps = new MongoTemplate(MongoClients.create(), "testDB");
+//    List<Document> result = mongoOps.find(qry, Document.class, "testCollection");
+
+
+
+
+
+//    Criteria c1 =null,c2 =null ;
+//    Criteria criteria =new Criteria();
+//
+//        if (paymentStatus != null && !paymentStatus.isEmpty()) {
+//                criteria.and("paymentStatus").is(paymentStatus);
+//                }
+//
+//                if (orderStatus != null && !orderStatus.isEmpty()) {
+//                criteria.and("orderStatus").is(orderStatus);
+//                }
+//
+//                if (productName != null && !productName.isEmpty()) {
+//                criteria.and("cartCheckout.productList.name").is(productName);
+//                }
+//
+//                if (userId != null && userId!=0) {
+//                criteria.and("userId").is(userId);
+//                }
+//
+//                if (startDate != null) {
+//                c1 = Criteria.where("createdAt").gte(startDate);
+//                }
+//
+//                if (endDate != null) {
+//                c2 = Criteria.where("createdAt").lte(endDate);
+//                }
+//
+//                Criteria c = new Criteria().andOperator(c1, c2, criteria);
+//
+//                Query query = new Query(c);

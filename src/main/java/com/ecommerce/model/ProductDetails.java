@@ -7,17 +7,20 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
+@Document(value = "productDetails")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Payment_type {
+public class ProductDetails {
 
     @Id
     private Integer id;
 
-    private String type;
+    private Integer available_count;
 
-    private Boolean is_active;
+    private String meta_key;
 
+    private String meta_value;
+
+    private Integer productId;
 }

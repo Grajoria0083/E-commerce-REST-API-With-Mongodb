@@ -4,7 +4,7 @@ import com.ecommerce.Exception.ProductException;
 import com.ecommerce.model.CustomSequences;
 import com.ecommerce.model.Product;
 import com.ecommerce.DTO.ProductFilterRequestModal;
-import com.ecommerce.model.Product_details;
+import com.ecommerce.model.ProductDetails;
 import com.ecommerce.repository.ProductRepo;
 import com.ecommerce.repository.Product_detailsRepo;
 import com.ecommerce.service.ProductService;
@@ -36,8 +36,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product addProduct(Product product) throws ProductException {
         product.setId(sequences.getNextSequence("product"));
-//        product.setCreated_at(LocalDateTime.now());
-//        product.setUpdated_at(LocalDateTime.now());
+        product.setCreated_at(LocalDateTime.now());
         return productRepo.save(product);
     }
 
@@ -55,19 +54,18 @@ public class ProductServiceImpl implements ProductService {
     public Product updateProduct(Product product) throws ProductException {
         Optional<Product> optionalProduct = productRepo.findById(product.getId());
         if (optionalProduct.isPresent()){
-//            product.setUpdated_at(LocalDateTime.now());
-//            product.setCreated_at(optionalProduct.get().getCreated_at());
+            product.setCreated_at(optionalProduct.orElseThrow().getCreated_at());
             return productRepo.save(product);
         }
         throw new ProductException("Invalid product id!");
     }
 
     @Override
-    public Product_details addProduct_details(Product_details productDetails) throws ProductException {
+    public ProductDetails addProductDetails(ProductDetails productDetails) throws ProductException {
         productDetails.setId(sequences.getNextSequence("productDetails"));
         Optional<Product> optionalProduct = productRepo.findById(productDetails.getProductId());
         if (optionalProduct.isPresent()) {
-            Optional<Product_details> optionalProductDetails = productDetailsRepo.findByProductId(productDetails.getProductId());
+            Optional<ProductDetails> optionalProductDetails = productDetailsRepo.findByProductId(productDetails.getProductId());
             if (!optionalProductDetails.isPresent()){
                 return productDetailsRepo.save(productDetails);
             }
@@ -77,8 +75,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product_details getProduct_detailsById(Integer productId) throws ProductException {
-        Optional<Product_details> optionalProduct = productDetailsRepo.findById(productId);
+    public ProductDetails getProductDetailsById(Integer productId) throws ProductException {
+        Optional<ProductDetails> optionalProduct = productDetailsRepo.findById(productId);
         if (optionalProduct.isPresent()){
             return optionalProduct.get();
         }
@@ -86,8 +84,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product_details updateProduct_details(Product_details productDetails) throws ProductException {
-        Optional<Product_details> optionalProductDetails = productDetailsRepo.findById(productDetails.getId());
+    public ProductDetails updateProductDetails(ProductDetails productDetails) throws ProductException {
+        Optional<ProductDetails> optionalProductDetails = productDetailsRepo.findById(productDetails.getId());
         if (optionalProductDetails.isPresent()){
             Optional<Product> optionalProduct = productRepo.findById(productDetails.getProductId());
             if (optionalProduct.isPresent()){
@@ -118,7 +116,7 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> optionalProduct = productRepo.findById(prodId);
         if (optionalProduct.isPresent()){
             productRepo.deleteById(prodId);
-            Optional<Product_details> optionalProductDetails = productDetailsRepo.findByProductId(prodId);
+            Optional<ProductDetails> optionalProductDetails = productDetailsRepo.findByProductId(prodId);
             if (optionalProduct.isPresent()){
                 productDetailsRepo.deleteById(optionalProductDetails.get().getId());
             }
