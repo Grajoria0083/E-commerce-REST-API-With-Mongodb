@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+</head>
+<body>
+<div class ="container">
+    <div class = "row">
+        <h1> List Orders </h1>
+    </div>
+    <table class = "table table-striped table-bordered">
+        <thead class = "table-dark">
+        <tr>
+            <th> Product Id</th>
+            <th> Product Name</th>
+            <th> Product Price </th>
+            <th> Product Quantity</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each = "product: ${productList}">
+            <td th:if = "@{product!=null}" th:text = "${product.productId}"></td>
+            <td th:if = "@{product!=null}" th:text = "${product.name} ? ${product.name} : 'NA'"></td>
+            <td th:if = "@{product!=null}" th:text = "${product.price} ? ${product.price} : 'NA'"></td>
+            <td th:if = "@{product!=null}" th:text = "${product.quantity} ? ${product.quantity} : 'NA'"></td>
+<!--            <td><span th:text = "${order.productList} ? ${order.productList}+'gaurav' : 'NA'"></span></td>-->
+        </tr>
+        </tbody>
+
+    </table>
+
+</div>
+</body>
+</html>

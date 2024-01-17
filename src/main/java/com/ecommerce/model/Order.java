@@ -31,19 +31,21 @@ public class Order {
 
     private String paymentStatus;
 
+    private Integer paymentId;
+
     private String orderStatus;
 
     @Column(updatable = false)
-    @CreationTimestamp
+    @CreatedDate
     private LocalDateTime createdAt;
 
     @Column(updatable = true)
-    @UpdateTimestamp
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    private Integer orderDetaildsId;
+//    private Integer orderDetaildsId;
 
-    private CartCheckout cartCheckout;
+    private CartCheckout orderDetails;
 
 
 }

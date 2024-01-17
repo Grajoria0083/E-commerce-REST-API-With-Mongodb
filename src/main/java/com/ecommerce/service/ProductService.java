@@ -13,7 +13,6 @@ public interface ProductService {
     public Product addProduct(Product product) throws ProductException;
     public Product getProductById(Integer productId) throws ProductException;
     public Product updateProduct(Product product) throws ProductException;
-
     public ProductDetails addProductDetails(ProductDetails productDetails) throws ProductException;
     public ProductDetails getProductDetailsById(Integer productId) throws ProductException;
     public ProductDetails updateProductDetails(ProductDetails productDetails) throws ProductException;

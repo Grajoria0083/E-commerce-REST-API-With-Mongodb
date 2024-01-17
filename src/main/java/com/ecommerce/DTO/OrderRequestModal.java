@@ -10,7 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderRequestModal {
 
+    private Integer userId;
     private Integer orderId;
     private String orderStatus;
+    private String paymentStatus;
+    private String paymentType;
+    private boolean active;
 }
 

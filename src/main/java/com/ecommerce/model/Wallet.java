@@ -27,7 +27,6 @@ public class Wallet {
     private String password;
 
     private Integer balance;
-
     @NotNull
     @NotBlank
     private Integer userId;

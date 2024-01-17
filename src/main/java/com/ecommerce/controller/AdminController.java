@@ -1,9 +1,11 @@
 package com.ecommerce.controller;
 
 
+import com.ecommerce.DTO.PaymentRequestModal;
 import com.ecommerce.DTO.RecordCountDAO;
 import com.ecommerce.Exception.*;
 import com.ecommerce.model.Order;
+import com.ecommerce.model.Payment;
 import com.ecommerce.model.Product;
 import com.ecommerce.model.User;
 import com.ecommerce.service.AdminService;
@@ -92,6 +94,13 @@ public class AdminController {
     ResponseEntity<RecordCountDAO> getOrderById() throws OrderException {
         RecordCountDAO rcd = adminService.viewRecordCount();
         return new ResponseEntity<>(rcd, HttpStatus.OK);
+    }
+
+
+    @PostMapping("/payment/history")
+    ResponseEntity<List<Payment>> getPaymentHistory(@RequestBody PaymentRequestModal paymentRequestModal) throws OrderException {
+        List<Payment> paymentList = adminService.viewPaymentHistory(paymentRequestModal);
+        return new ResponseEntity<>(paymentList, HttpStatus.ACCEPTED);
     }
 
 

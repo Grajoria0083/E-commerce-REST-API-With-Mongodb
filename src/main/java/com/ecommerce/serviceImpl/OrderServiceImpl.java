@@ -4,10 +4,12 @@ import com.ecommerce.DTO.OrderFilterRequestModal;
 import com.ecommerce.DTO.OrderRequestModal;
 import com.ecommerce.Exception.CartException;
 import com.ecommerce.Exception.OrderException;
-import com.ecommerce.Exception.WaletException;
+import com.ecommerce.Exception.PaymentException;
+import com.ecommerce.Exception.WalletException;
 import com.ecommerce.model.*;
 import com.ecommerce.repository.*;
 import com.ecommerce.service.OrderService;
+import com.ecommerce.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -52,55 +54,64 @@ public class OrderServiceImpl implements OrderService {
     PaymentRepository paymentRepository;
 
 
+    @Autowired
+    PaymentService paymentService;
+
+
 
     @Override
-    public Order orderByUser(OrderDetails orderDetails) throws CartException, WaletException {
+    public Order orderByUser(OrderRequestModal orm) throws CartException, WalletException {
 
-//        Optional<CartCheckout> optionalCartCheckout = cartCheckoutRepository.findByUserId(orderDetails.getUserId());
-//        if (optionalCartCheckout.isPresent()){
-//            CartCheckout cartCheckout = optionalCartCheckout.get();
-        CartCheckout cartCheckout = cartService.checkoutCartDetails(orderDetails.getUserId());
+        CartCheckout cartCheckout = cartService.checkoutCartDetails(orm.getUserId());
         if (cartCheckout!=null){
 
             Payment payment = new Payment();
             Order order = new Order();
-            if (orderDetails.getPaymentType() == null || orderDetails.getPaymentType().equals("COD")){
-                payment.setStatus("pending");
+            if (orm.getPaymentType() == null || orm.getPaymentType().toUpperCase().equals("COD")){
+                payment.setStatus(PaymentStatus.PENDING.name().toLowerCase());
                 payment.setType("COD");
-                order.setPaymentStatus("pending");
+//                order.setPaymentStatus(PaymentStatus.PENDING.name().toLowerCase());
 
-            } else if (orderDetails.getPaymentType().equals("Wallet")) {
-                Optional<Wallet> optionalWallet = walletRepository.findByUserId(orderDetails.getUserId());
+            } else if (orm.getPaymentType().toLowerCase().equals("wallet")) {
+                Optional<Wallet> optionalWallet = walletRepository.findByUserId(orm.getUserId());
                 if (optionalWallet.isPresent()){
                     Wallet wallet = optionalWallet.get();
                     if (wallet.getBalance()>=cartCheckout.getTotalAmount()){
                         wallet.setBalance(wallet.getBalance()-cartCheckout.getTotalAmount());
                         walletRepository.save(wallet);
-                        payment.setStatus("Payment done successfully!");
+                        payment.setStatus(PaymentStatus.DONE.name().toLowerCase());
+                        payment.setDetails("Payment done successfully!");
                         payment.setType("Wallet");
-                        order.setPaymentStatus("Payment done successfully!");
-                    }else
-                        throw new WaletException("Insuficien balance in wallet!");
-                }else
-                    throw new WaletException("invalid user wallet details!");
+//                        order.setPaymentStatus("confirm");
+                    }else {
+                        payment.setStatus(PaymentStatus.FAILED.name().toLowerCase());
+                        payment.setDetails("Insuficient balance in wallet!");
+                    }
+                }else {
+                    payment.setStatus(PaymentStatus.FAILED.name().toLowerCase());
+                    payment.setDetails("invalid user wallet details!");
+                }
+                payment.setType("Wallet");
             }
-            orderDetails.setId(sequences.getNextSequence("orderDetails"));
+            else {
+                payment.setStatus(PaymentStatus.FAILED.name().toLowerCase());
+//                order.setPaymentStatus(PaymentStatus.FAILED.name().toLowerCase());
+                payment.setType("Wallet");
+                payment.setDetails("Invalid payment type!");
+            }
             payment.setId(sequences.getNextSequence("payment"));
-            payment.setType(orderDetails.getPaymentType());
-//            payment.setStatus();
             cartCheckout.setActive(false);
             order.setId(sequences.getNextSequence("order"));
-            order.setUserId(orderDetails.getUserId());
-            order.setCartCheckout(cartCheckout);
-            order.setOrderDetaildsId(orderDetails.getId());
+            order.setUserId(orm.getUserId());
+            order.setOrderDetails(cartCheckout);
             order.setActive(true);
-            order.setPaymentStatus("pending");
-            order.setOrderStatus(OrderStatus.PROGRESS.name());
+            order.setOrderStatus(OrderStatus.PROGRESS.name().toLowerCase());
             order.setCreatedAt(LocalDateTime.now());
-            order.setUpdatedAt(LocalDateTime.now());
+            order.setPaymentId(payment.getId());
             payment.setOrderId(order.getId());
+            payment.setUserId(orm.getUserId());
+            payment.setCreatedAt(LocalDateTime.now());
             paymentRepository.save(payment);
-            orderDetailsRepo.save(orderDetails);
             return orderRepo.save(order);
         }
         throw new CartException("No product is added to cart");
@@ -110,9 +121,18 @@ public class OrderServiceImpl implements OrderService {
     public Order getOrderById(Integer orderId) throws OrderException {
         Optional<Order> optionalOrder =  orderRepo.findById(orderId);
         if (optionalOrder.isPresent()){
+             Order order = optionalOrder.get();
+             order.getCreatedAt().toLocalDate();
+            System.out.println("order.getCreatedAt().toLocalDate();"+order.getCreatedAt().toLocalDate());
+            System.out.println("order.getCreatedAt()"+order.getCreatedAt());
             return optionalOrder.get();
         }
         throw new OrderException("Invalid Order Id!");
+    }
+
+    @Override
+    public List<Order> getOrders() throws OrderException {
+        return orderRepo.findAll();
     }
 
     @Override
@@ -128,6 +148,19 @@ public class OrderServiceImpl implements OrderService {
         throw new OrderException("Invalid Order Id!");
     }
 
+    @Override
+    public String updateOrder(OrderRequestModal orm) throws OrderException, PaymentException {
+
+        Order order = getOrderById(orm.getOrderId());
+        order.setOrderStatus(!orm.getOrderStatus().isBlank() ? OrderStatus.valueOf(orm.getOrderStatus().toUpperCase()).name().toLowerCase() : order.getOrderStatus());
+        order.setActive(!orm.isActive() ? orm.isActive() : order.isActive());
+
+        Payment payment = paymentService.getByOrderId(orm.getOrderId());
+        payment.setStatus(!orm.getPaymentStatus().isBlank() ? PaymentStatus.valueOf(orm.getPaymentStatus().toUpperCase()).name().toLowerCase() : payment.getStatus());
+
+        paymentRepository.save(payment);
+        return "order update successfully!";
+    }
 
 
     @Override
@@ -140,10 +173,6 @@ public class OrderServiceImpl implements OrderService {
 
         String paymentStatus=rfrm.getPaymentStatus();
         String orderStatus = rfrm.getOrderStatus();
-        LocalDate sDate = rfrm.getStartDate();
-        LocalDateTime startDate = sDate.atTime(LocalTime.MIN);
-        LocalDate eDate = rfrm.getEndDate();
-        LocalDateTime endDate = eDate.atTime(LocalTime.MAX);
 
         String productName = rfrm.getProductName();
         Integer userId = rfrm.getUserId();
@@ -168,14 +197,13 @@ public class OrderServiceImpl implements OrderService {
             criteria.and("userId").is(userId);
         }
 
-        if (startDate != null) {
-             c1 = Criteria.where("createdAt").gte(startDate);
+        if (rfrm.getStartDate() != null) {
+            c1 = Criteria.where("createdAt").gte(rfrm.getStartDate().atTime(LocalTime.MIN));
         }
 
-        if (endDate != null) {
-             c2 = Criteria.where("createdAt").lte(endDate);
+        if (rfrm.getEndDate() != null) {
+            c2 = Criteria.where("createdAt").lte(rfrm.getEndDate().atTime(LocalTime.MAX));
         }
-
         Criteria c = new Criteria().andOperator(c1, c2, criteria);
 
 
@@ -200,6 +228,30 @@ public class OrderServiceImpl implements OrderService {
         throw new OrderException("Invalid Order Id!");
     }
 }
+
+
+
+
+
+// Working***********
+//        LocalDate sDate = rfrm.getStartDate();
+//        LocalDate eDate = rfrm.getEndDate();
+//        LocalDateTime startDate = null;
+//        LocalDateTime endDate = null;
+//
+//        if (sDate!=null)
+//            startDate = sDate.atTime(LocalTime.MIN);
+//        if (eDate!=null)
+//         endDate = eDate.atTime(LocalTime.MAX);
+
+//        if (startDate != null) {
+//             c1 = Criteria.where("createdAt").gte(startDate);
+//        }
+//
+//        if (endDate != null) {
+//             c2 = Criteria.where("createdAt").lte(endDate);
+//        }
+// Working***********
 
 
 

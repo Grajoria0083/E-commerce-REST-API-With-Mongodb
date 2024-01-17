@@ -1,8 +1,6 @@
 package com.ecommerce.Exception;
 
 
-import com.ecommerce.model.User;
-import jdk.jshell.spi.ExecutionControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -68,7 +66,7 @@ public class GlobalExceptionHandler {
 
 
 
-    @ExceptionHandler(WaletException.class)
+    @ExceptionHandler(WalletException.class)
     public ResponseEntity<MyErrorDetails> walletException(Exception e, WebRequest wr){
 
         MyErrorDetails error = new MyErrorDetails();
@@ -82,6 +80,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(OrderException.class)
     public ResponseEntity<MyErrorDetails> orderException(Exception e, WebRequest wr){
+
+        MyErrorDetails error = new MyErrorDetails();
+        error.setLocalDateTime(LocalDateTime.now());
+        error.setMsg(e.getMessage());
+        error.setDetails(wr.getDescription(false));
+
+        return new  ResponseEntity<MyErrorDetails>(error, HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(PaymentException.class)
+    public ResponseEntity<MyErrorDetails> orderPayment(Exception e, WebRequest wr){
 
         MyErrorDetails error = new MyErrorDetails();
         error.setLocalDateTime(LocalDateTime.now());

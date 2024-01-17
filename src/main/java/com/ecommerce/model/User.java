@@ -26,25 +26,25 @@ public class User {
     @Id
     private Integer id;
 
-    @NotBlank(message = "first_name should not be blank")
-    @NotNull(message = "first_name should not be null")
+//    @NotBlank(message = "first_name should not be blank")
+//    @NotNull(message = "first_name should not be null")
     private String first_name;
 
-    @NotBlank(message = "last_name should not be blank")
-    @NotNull(message = "first_name should not be null")
+//    @NotBlank(message = "last_name should not be blank")
+//    @NotNull(message = "first_name should not be null")
     private String last_name;
 
-    @Email(message = "email should not be email")
-    @NotNull(message = "email should not be null")
-    @NotEmpty(message = "email should not be empty")
+//    @Email(message = "email should not be email")
+//    @NotNull(message = "email should not be null")
+//    @NotEmpty(message = "email should not be empty")
     private String email;
 
-    @Size(min = 10, max = 10, message = "Mobile number must be 10 digits")
-    @NotNull(message = "Mobile number should not be null")
-    @NotEmpty(message = "Mobile number should not be empty")
+//    @Size(min = 10, max = 10, message = "Mobile number must be 10 digits")
+//    @NotNull(message = "Mobile number should not be null")
+//    @NotEmpty(message = "Mobile number should not be empty")
     private String mobile;
 
-    @NotBlank(message = "password should not be null")
+//    @NotBlank(message = "password should not be null")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 

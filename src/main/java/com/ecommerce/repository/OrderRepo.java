@@ -21,7 +21,7 @@ public interface OrderRepo extends MongoRepository<Order, Integer> {
 
     @Query(value = "{ $group: { _id: '$userId', count: { $sum: 1 } } }", count = true)
     Integer countUniqueOrdersByUserId();
-    List<Order> findByPaymentStatus(@Param("paymentStatus") String paymentStatus);
+//    List<Order> findByPaymentStatus(@Param("paymentStatus") String paymentStatus);
 
     List<Order> findByOrderStatus(@Param("orderStatus") String orderStatus);
 

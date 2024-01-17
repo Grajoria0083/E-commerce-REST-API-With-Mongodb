@@ -16,8 +16,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class AppConfig {
 
 
-    private String[] publicEndPoint = {"/user/save","/user/get/**","/product/filter",
-             "/product/view","/cart","/swagger-ui/index.html","/v3/api-docs","/signIn"};
+    private String[] publicEndPoint = {"/user/save","/user/get/**","/product/filter","/resources/**","/static/**",
+             "/product/view","/cart","/swagger-ui/index.html","/v3/api-docs","/signIn","/adminLogin","/admin",};
 
     private String[] privateEndPoint = {"/user/update","/user/delete/**","/user/update","/order"};
 
@@ -32,18 +32,19 @@ public class AppConfig {
 
 
             http
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
+//                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                    .and()
                     .csrf().disable()
                     .authorizeHttpRequests()
                     .requestMatchers(publicEndPoint).permitAll()
 //                    .requestMatchers(privateEndPoint).hasRole("USER")
 //                    .requestMatchers(adminEndPoint).hasRole("ADMIN")
                     .anyRequest().permitAll().and()
-//                    .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-//                    .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
-//                    .formLogin()
-//                    .and()
+                    .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                    .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
+                    .formLogin()
+//                    .formLogin().loginPage("/adminLogin").defaultSuccessUrl("/hello").failureForwardUrl("/login")
+                    .and()
                     .httpBasic();
 
             return http.build();

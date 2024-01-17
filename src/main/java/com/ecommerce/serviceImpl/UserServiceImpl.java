@@ -47,7 +47,8 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
         if (!optionalUser.isPresent()){
             user.setId(sequences.getNextSequence("user"));
-            user.setRole("ROLE_"+user.getRole().toUpperCase());
+            user.setRole("ROLE_USER");
+//            user.setRole("ROLE_"+user.getRole().toUpperCase());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setCreated_at(LocalDateTime.now());
             if (user.getAddresss()!=null){
@@ -180,6 +181,7 @@ public class UserServiceImpl implements UserService {
         }
         else {
             wallet.setId(sequences.getNextSequence("wallet"));
+            wallet.setCreated_at(LocalDateTime.now());
             return walletRepository.save(wallet);
         }
 

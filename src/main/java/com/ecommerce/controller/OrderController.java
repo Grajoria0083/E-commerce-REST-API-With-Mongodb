@@ -5,9 +5,8 @@ import com.ecommerce.DTO.OrderFilterRequestModal;
 import com.ecommerce.DTO.OrderRequestModal;
 import com.ecommerce.Exception.CartException;
 import com.ecommerce.Exception.OrderException;
-import com.ecommerce.Exception.WaletException;
+import com.ecommerce.Exception.WalletException;
 import com.ecommerce.model.Order;
-import com.ecommerce.model.OrderDetails;
 import com.ecommerce.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,9 +25,15 @@ public class OrderController {
 
 
     @PostMapping("/place")
-    ResponseEntity<Order> placeOrder(@RequestBody OrderDetails orderDetails) throws CartException, WaletException {
-        Order order = orderService.orderByUser(orderDetails);
+    ResponseEntity<Order> placeOrder(@RequestBody OrderRequestModal orderRequestModal) throws CartException, WalletException {
+        Order order = orderService.orderByUser(orderRequestModal);
         return new ResponseEntity<>(order, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/")
+    ResponseEntity<List<Order>> getAllOrders() throws OrderException {
+        List<Order> orders = orderService.getOrders();
+        return new ResponseEntity<>(orders, HttpStatus.CREATED);
     }
 
 

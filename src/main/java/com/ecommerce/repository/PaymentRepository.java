@@ -15,6 +15,8 @@ import java.util.Optional;
 public interface PaymentRepository extends MongoRepository<Payment, Integer> {
 
     Optional<Payment> findByOrderId(@Param("orderId") Integer orderId);
+
+    List<Payment> findByUserId(@Param("userId") Integer userId);
     List<Payment> findByType(@Param("type") String type);
     List<Payment> findByStatus(@Param("status") String status);
 

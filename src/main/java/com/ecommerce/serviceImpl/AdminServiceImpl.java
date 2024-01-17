@@ -1,5 +1,6 @@
 package com.ecommerce.serviceImpl;
 
+import com.ecommerce.DTO.PaymentRequestModal;
 import com.ecommerce.DTO.RecordCountDAO;
 import com.ecommerce.model.Order;
 import com.ecommerce.model.Payment;
@@ -9,8 +10,14 @@ import com.ecommerce.repository.PaymentRepository;
 import com.ecommerce.repository.UserRepository;
 import com.ecommerce.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,19 +34,15 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     OrderRepo orderRepo;
 
-
     @Autowired
     PaymentRepository paymentRepository;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Override
     public RecordCountDAO viewRecordCount() {
 
-        Integer deliveredOrderCount = 0;
-        Integer inProgressOrderCount = 0;
-        Integer failedOrderCount = 0;
-        Integer paymentDone = 0;
-        Integer paymentFail = 0;
-        Integer totalPendingPayment = 0;
         RecordCountDAO rcd = new RecordCountDAO();
         List<User> userList  = userRepository.findByRole("ROLE_USER");
         rcd.setTotalResisterdUser(userList.size());
@@ -65,6 +68,48 @@ public class AdminServiceImpl implements AdminService {
         rcd.setTotalPayment(paymentRepository.findAll().size());
 
         return rcd;
+
+    }
+
+    @Override
+    public List<Payment> viewPaymentHistory(PaymentRequestModal prm) {
+
+        Integer orderId = prm.getOrderId();
+        Integer userId = prm.getUserId();
+        String paymentStatus = prm.getPaymentStatus();
+
+        Criteria c1 =new Criteria(),c2 =new Criteria() ;
+
+        Criteria criteria =new Criteria();
+
+        if (userId != null && userId!=0) {
+            criteria.and("userId").is(userId);
+        }
+
+        if (orderId != null && orderId!=0) {
+            criteria.and("orderId").is(orderId);
+        }
+
+        if (paymentStatus != null) {
+            criteria.and("status").is(paymentStatus);
+        }
+
+        if (prm.getStartDate() != null) {
+            c1 = Criteria.where("updatedAt").gte(prm.getStartDate().atTime(LocalTime.MIN));
+        }
+
+        if (prm.getEndDate() != null) {
+            c2 = Criteria.where("updatedAt").lte(prm.getEndDate().atTime(LocalTime.MAX));
+        }
+
+        Criteria c = new Criteria().andOperator(c1, c2, criteria);
+
+
+        Query query = new Query(c);
+
+        List<Payment> paymentList = mongoTemplate.find(query, Payment.class);
+
+        return paymentList;
 
     }
 }

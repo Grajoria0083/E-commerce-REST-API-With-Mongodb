@@ -2,5 +2,5 @@ package com.ecommerce.model;
 
 public enum OrderStatus {
 
-    PENDING, PROGRESS, DELIVERED, FAILED
+    CONFIRM, PROGRESS, DELIVERED, FAILED
 }
