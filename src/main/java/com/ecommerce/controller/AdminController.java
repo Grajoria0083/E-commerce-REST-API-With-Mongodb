@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -70,7 +71,7 @@ public class AdminController {
     }
 
     @PostMapping("/product/add")
-    ResponseEntity<Product> addProduct(@RequestBody Product product) throws UserException, ProductException {
+    ResponseEntity<Product> addProduct(@RequestBody Product product) throws UserException, ProductException, IOException {
         return new ResponseEntity<>(productService.addProduct(product), HttpStatus.CREATED);
     }
 

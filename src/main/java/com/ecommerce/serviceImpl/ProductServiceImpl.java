@@ -1,19 +1,27 @@
 package com.ecommerce.serviceImpl;
 
+import com.ecommerce.DTO.ProductForm;
 import com.ecommerce.Exception.ProductException;
 import com.ecommerce.model.CustomSequences;
 import com.ecommerce.model.Product;
 import com.ecommerce.DTO.ProductFilterRequestModal;
 import com.ecommerce.model.ProductDetails;
+import com.ecommerce.model.User;
 import com.ecommerce.repository.ProductRepo;
 import com.ecommerce.repository.Product_detailsRepo;
 import com.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -33,10 +41,45 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     CustomSequences sequences;
+
+    @Value("${project.image}")
+    String path;
+
+
     @Override
-    public Product addProduct(Product product) throws ProductException {
+    public Product addProduct(Product product) throws ProductException, IOException {
         product.setId(sequences.getNextSequence("product"));
         product.setCreated_at(LocalDateTime.now());
+        return productRepo.save(product);
+    }
+
+
+    @Override
+    public Product addProductForm(ProductForm productForm) throws ProductException, IOException {
+        Product product = new Product();
+        product.setId(sequences.getNextSequence("product"));
+        product.setCreated_at(LocalDateTime.now());
+        product.setName(productForm.getName());
+        product.setCategory(productForm.getCategory());
+        product.setPrice(productForm.getPrice());
+        product.setSize(productForm.getSize());
+        product.setDescription(productForm.getDescription());
+
+        MultipartFile multipartFile = productForm.getMultipartFile();
+
+        String name = multipartFile.getOriginalFilename();
+        String filePath = path+name;
+        System.out.println("path "+path);
+        System.out.println("filePath "+filePath);
+        File file = new File(path);
+
+        if (!file.exists()){
+            file.mkdir();
+        }
+        Files.copy(multipartFile.getInputStream(), Paths.get(filePath));
+
+        product.setFile(multipartFile.getBytes());
+        product.setFilePath(name);
         return productRepo.save(product);
     }
 
@@ -117,7 +160,7 @@ public class ProductServiceImpl implements ProductService {
         if (optionalProduct.isPresent()){
             productRepo.deleteById(prodId);
             Optional<ProductDetails> optionalProductDetails = productDetailsRepo.findByProductId(prodId);
-            if (optionalProduct.isPresent()){
+            if (optionalProductDetails.isPresent()){
                 productDetailsRepo.deleteById(optionalProductDetails.get().getId());
             }
             return "Product of id "+prodId+" deleted! ";
@@ -172,6 +215,11 @@ public class ProductServiceImpl implements ProductService {
 
         return mongoTemplate.find(query, Product.class);
 
+    }
+
+    @Override
+    public String uploadImage(String path, MultipartFile multipartFile) {
+        return null;
     }
 
 }

@@ -69,8 +69,6 @@
 
 
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" th:replace="sidebar::sidebar"></ul>
-    <!-- End of Sidebar -->
-
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
@@ -86,156 +84,93 @@
             <!--            <div class="container-fluid" th:insert="userFrorm::userform">-->
             <!--                </div>-->
             <div class="container-fluid">
-
-
                 <div class="card shadow mb-4">
-
+                    <!--                    <div class="card-header py-3" >-->
+                    <!--                        <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>-->
+                    <!--                    </div>-->
                     <div class="card-body">
                         <!--                        <div class="table-responsive">-->
-                        <form th:action="@{/updateUsers}" th:object = "${data}" method="POST">
+                        <form th:action="@{/addProduct}" th:object = "${product}" method="POST" enctype="multipart/form-data">
                             <div class="form-row">
                                 <div class="col">
-                                    <label>First Name</label>
+                                    <label>Name</label>
                                     <input
                                             type = "text"
-                                            th:field = "*{userId}"
-                                            name="userId"
+                                            field = "*{name}"
+                                            name="name"
                                             class = "form-control"
-                                            hidden="hidden"
-                                    >
-                                    <input
-                                            type = "text"
-                                            th:field = "*{first_name}"
-                                            name="first_name"
-                                            class = "form-control"
-                                            placeholder="Enter first name"
+                                            placeholder="Enter Product Name"
                                     >
                                 </div>
                                 <div class="col">
-                                    <label>Last Name</label>
+                                    <label>Category</label>
                                     <input
                                             type = "text"
-                                            th:field = "*{last_name}"
+                                            field = "*{category}"
+                                            name="category"
                                             class = "form-control"
-                                            placeholder="Enter last name"
+                                            placeholder="Enter Product Category"
                                     >
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="col">
-                                    <label>Email</label>
+                                    <label>Price</label>
                                     <input
                                             type = "text"
-                                            th:field = "*{email}"
-                                            name="email"
+                                            field = "*{price}"
+                                            name="price"
                                             class = "form-control"
-                                            placeholder="Enter email"
+                                            placeholder="Enter Product Price"
                                     >
                                 </div>
                                 <div class="form-row">
                                     <div class="col">
-                                        <label>Mobile</label>
+                                        <label>Size</label>
                                         <input
                                                 type = "text"
-                                                th:field = "*{mobile}"
-                                                name="mobile"
+                                                field = "*{size}"
+                                                name="size"
                                                 class = "form-control"
-                                                placeholder="Enter mobile"
-                                                required="required"
+                                                placeholder="Enter Product Size"
                                         >
                                     </div>
                                 </div>
-                                <div class="col">
-                                    <label>Password</label>
-                                    <input
-                                            type = "text"
-                                            field = "*{password}"
-                                            name="password"
-                                            class = "form-control"
-                                            placeholder="Enter password"
-                                    >
-                                </div>
-
                             </div>
-                            <div class="form-group">
-                                <label>Address 1</label>
+                            <div class="col">
+                                <label>Description</label>
                                 <input
                                         type = "text"
-                                        th:field = "*{address_1}"
-                                        name="address_1"
+                                        field = "*{Description}"
+                                        name="Description"
                                         class = "form-control"
-                                        placeholder="Enter address 1"
+                                        placeholder="Enter Product Description"
                                 >
                             </div>
                             <div class="form-group">
-                                <label>Address 2</label>
+                                <label>Image</label>
                                 <input
-                                        type = "text"
-                                        th:field = "*{address_2}"
-                                        name="address_2"
+                                        type = "file"
+                                        multiple
+                                        field = "*{multipartFile}"
+                                        name="multipartFile"
                                         class = "form-control"
-                                        placeholder="Enter address 1"
+                                        placeholder="Select File"
+                                        accept="image/png, image/jpeg"
                                 >
                             </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label>City</label>
-                                    <input
-                                            type = "text"
-                                            th:field = "*{city}"
-                                            name="city"
-                                            class = "form-control"
-                                            placeholder="Enter City"
-                                    >
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label>State</label>
-                                    <input
-                                            type = "text"
-                                            th:field = "*{state}"
-                                            name="state"
-                                            class = "form-control"
-                                            placeholder="Enter State"
-                                    >
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label>Country</label>
-                                    <input
-                                            type = "text"
-                                            th:field = "*{country}"
-                                            name="country"
-                                            class = "form-control"
-                                            placeholder="Enter Country"
-                                    >
-                                </div>
-                                <!--                        <div class="form-group col-md-2">-->
-                                <!--                            <label>Pincode</label>-->
-                                <!--                            <input-->
-                                <!--                                    type = "text"-->
-                                <!--                                    field = "*{last_name}"-->
-                                <!--                                    name="last_name"-->
-                                <!--                                    class = "form-control"-->
-                                <!--                                    placeholder="Enter Pincode"-->
-                                <!--                            >-->
-                                <!--                        </div>-->
-                            </div>
-                            <!--                    <div class="form-group">-->
-                            <!--                        <div class="form-check">-->
-                            <!--                            <input-->
-                            <!--                                    type = "text"-->
-                            <!--                                    field = "*{last_name}"-->
-                            <!--                                    name="last_name"-->
-                            <!--                                    class = "form-control"-->
-                            <!--                                    placeholder="Enter user first name"-->
-                            <!--                            >-->
-                            <!--                            <label class="form-check-label">-->
-                            <!--                                Check me out-->
-                            <!--                            </label>-->
-                            <!--                        </div>-->
-                            <!--                    </div>-->
+<!--                            <div class="form-group">-->
+<!--                                <label>Large Thumbnail</label>-->
+<!--                                <input-->
+<!--                                        type = "text"-->
+<!--                                        field = "*{large_thumbnail}"-->
+<!--                                        name="large_thumbnail"-->
+<!--                                        class = "form-control"-->
+<!--                                        placeholder="Enter large_thumbnail"-->
+<!--                                >-->
+<!--                            </div>-->
                             <button type="submit" class="btn btn-primary">Save</button>
                         </form>
-
 
                     </div>
                 </div>

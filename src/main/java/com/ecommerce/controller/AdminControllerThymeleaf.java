@@ -1,22 +1,25 @@
 package com.ecommerce.controller;
 
 
-import com.ecommerce.DTO.LoginModal;
-import com.ecommerce.DTO.OrderFilterRequestModal;
-import com.ecommerce.DTO.UserDTO;
+import com.ecommerce.DTO.*;
 import com.ecommerce.Exception.OrderException;
+import com.ecommerce.Exception.ProductException;
 import com.ecommerce.Exception.UserException;
 import com.ecommerce.model.*;
-import com.ecommerce.service.AdminService;
-import com.ecommerce.service.LoginService;
-import com.ecommerce.service.OrderService;
-import com.ecommerce.service.UserService;
+import com.ecommerce.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +40,15 @@ public class AdminControllerThymeleaf {
 
     @Autowired
     AdminService adminService;
+
+
+    @Autowired
+    ProductService productService;
+
+
+
+    @Value("${project.image}")
+    String path;
 
 
     @GetMapping("/hello")
@@ -110,12 +122,23 @@ public class AdminControllerThymeleaf {
     }
 
 
+
+
+
+
+
+
+
+
+
+
     @GetMapping("/getUsers")
     public String getAllUsers(Model model) throws UserException {
         List<User> users = userService.getUsers();
         model.addAttribute("users", users);
         return "user";
     }
+
 
     @GetMapping("/userRequst")
     public String saveUser(Model model) throws UserException {
@@ -161,6 +184,96 @@ public class AdminControllerThymeleaf {
 
 
 
+
+
+
+    @GetMapping("/getProducts")
+    public String getProducts(Model model) throws UserException, ProductException {
+        model.addAttribute("products", productService.viewAllproducts());
+        return "product";
+    }
+
+    @GetMapping("/deleteProduct/{id}")
+    public String deleteProduct(Model model, @PathVariable("id") Integer id) throws ProductException {
+        model.addAttribute("productDeleted",productService.deleteProductById(id));
+        return "redirect:/getProducts";
+    }
+
+
+    @GetMapping("/updateProduct/{id}")
+    public String updateProduct(Model model, @ModelAttribute("product") @PathVariable("id") Integer id) throws UserException, ProductException {
+        model.addAttribute("update",setProductForm(productService.getProductById(id)));
+        return "updateProductForm";
+    }
+    @PostMapping("/updateProduct")
+    public String updateProduct(Model model, @ModelAttribute("update") ProductForm productForm) throws ProductException, IOException {
+//        System.out.println("product "+product);
+        model.addAttribute("productUpdate",productService.updateProduct(setProductFormToProduct(productForm)));
+        return "redirect:/getProducts";
+    }
+
+    @GetMapping("/productRequest")
+    public String addProduct(Model model) throws UserException {
+        model.addAttribute("product", new ProductForm());
+        return "addProductForm";
+    }
+
+    @PostMapping("/addProduct")
+    public String saveProduct(Model model, @ModelAttribute("user") ProductForm productForm) throws UserException, ProductException, IOException {
+        System.out.println("product "+productForm);
+        model.addAttribute("product", productService.addProductForm(productForm));
+        return "redirect:/getProducts";
+    }
+
+
+
+    @GetMapping("/productFilterRequest")
+    public String productFiler(Model model) throws OrderException {
+        model.addAttribute("ProductFilterRequestModal", new ProductFilterRequestModal());
+        return "productFilter";
+    }
+
+    @PostMapping("/productFilter")
+    public String productFilter(Model model, @ModelAttribute("ProductFilterRequestModal") ProductFilterRequestModal pfrm) throws OrderException, ProductException {
+//        System.out.println("ofrm "+);
+        model.addAttribute("products", productService.productFilter(pfrm));
+        return "product";
+    }
+
+
+//    @PostMapping("/fileUpload")
+//    String imgUpload(MultipartFile multipartFile) throws IOException {
+//
+//        productService.uploadImage(path, multipartFile);
+//
+//        String name = multipartFile.getOriginalFilename();
+//        String filePath = path+ File.separator+name;
+//        File file = new File(path);
+//
+//        if (!file.exists()){
+//            file.mkdir();
+//        }
+//        Files.copy(multipartFile.getInputStream(), Paths.get(filePath));
+//        return name;
+//
+//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private User dataSet(UserDTO userDTO){
         User user = new User();
         user.setFirst_name(userDTO.getFirst_name());
@@ -196,4 +309,28 @@ public class AdminControllerThymeleaf {
         return user;
     }
 
+
+    private ProductForm setProductForm(Product product){
+        ProductForm productForm = new ProductForm(product.getId(),
+                product.getName(), product.getDescription(), product.getCategory(),
+                product.getPrice(), product.getSize());
+        return productForm;
+    }
+
+    private Product setProductFormToProduct(ProductForm productForm) throws IOException {
+        Product product = new Product(productForm.getId(),
+                productForm.getName(), productForm.getDescription(), productForm.getCategory(),
+                productForm.getPrice(), productForm.getSize());
+
+        MultipartFile multipartFile = productForm.getMultipartFile();
+
+        String name = multipartFile.getOriginalFilename();
+        String filePath = path+name;
+
+        Files.copy(multipartFile.getInputStream(), Paths.get(filePath));
+
+        product.setFile(multipartFile.getBytes());
+        product.setFilePath(name);
+        return product;
+    }
 }
